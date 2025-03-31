@@ -1,26 +1,73 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap");
+
+@font-face {
+  font-family: "SwissNow";
+  src: url("/fonts/SwissNow-Regular.woff2") format("woff2"),
+    url("/fonts/SwissNow-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --font-sans: "SwissNow", ui-sans-serif, system-ui, sans-serif,
+    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Enterprise Colors */
+  --enterprise-blue: #0f172a;
+  --enterprise-gray: #323232;
+  --enterprise-yellow: #d0a650;
+  --enterprise-lightGray: #f8fafc;
+  --enterprise-black: #1e293b;
+  --border-color: #fff; /* Explicit border color */
+  --background-color: #eceeed;
+  --navbar-gradient: #e5e8e7;
+  --link-color: #474948;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+.serif {
+  font-family: var(--font-serif);
+}
+
+/* Base styles */
+@layer base {
+  body {
+    @apply bg-[var(--background-color)] text-[var(--enterprise-gray)] font-sans;
+  }
+  * {
+    @apply border-[var(--border-color)] outline-[var(--border-color)]/50;
+  }
+  a {
+    @apply text-[var(--link-color)] hover:text-[var(--enterprise-yellow)];
+  }
+}
+
+/* Components */
+@layer components {
+  .btn {
+    @apply px-6 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+  .btn-primary {
+    @apply bg-[var(--enterprise-blue)] text-white hover:bg-[var(--enterprise-blue)/90];
+  }
+  .btn-secondary {
+    @apply border-2 border-[var(--enterprise-blue)] text-[var(--enterprise-blue)] hover:bg-[var(--enterprise-blue)/10];
+  }
+  .container-custom {
+    @apply container mx-auto px-4 md:px-6 max-w-7xl;
+  }
+  .section {
+    @apply py-12 md:py-24;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
+  }
+  .navbar-link {
+    @apply text-[var(--link-color)] hover:text-[var(--enterprise-yellow)];
+  }
 }
