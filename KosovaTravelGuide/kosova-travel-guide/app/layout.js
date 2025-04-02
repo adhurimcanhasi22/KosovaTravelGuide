@@ -1,5 +1,11 @@
-import "./globals.css";
+import "../app/globals.css";
 import Layout from "@/components/Layout";
+import { Signika_Negative } from "next/font/google";
+
+const signikaNegative = Signika_Negative({
+  subsets: ["latin"], // Specify the character set
+  weight: ["300", "400", "500", "600", "700"], // Include all weights
+});
 
 export default function RootLayout({ children }) {
   return (
@@ -13,15 +19,8 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>
-<<<<<<< HEAD
+      <body className={signikaNegative.className}>
         <Layout>{children}</Layout>
-=======
-        <Layout>
-          {children}
-          
-        </Layout>
->>>>>>> e889acf18d035184f2b5da16b15a33b5e70361da
       </body>
     </html>
   );

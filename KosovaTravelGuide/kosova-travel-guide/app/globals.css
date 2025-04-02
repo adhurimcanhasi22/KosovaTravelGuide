@@ -20,10 +20,11 @@
   --enterprise-yellow: #d0a650;
   --enterprise-lightGray: #f8fafc;
   --enterprise-black: #1e293b;
-  --border-color: #fff; /* Explicit border color */
+  --border-color: #ffffff; /* Explicit border color */
   --background-color: #eceeed;
-  --navbar-gradient: #e5e8e7;
+  --navbar-gradient: #efefef;
   --link-color: #474948;
+  --eggshell: #fdfdfd;
 }
 
 body {
@@ -68,6 +69,6 @@ body {
     @apply bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
   }
   .navbar-link {
-    @apply text-[var(--link-color)] hover:text-[var(--enterprise-yellow)];
+    @apply text-[var(--enterprise-blue)] hover:text-[var(--enterprise-yellow)] text-lg;
   }
 }
