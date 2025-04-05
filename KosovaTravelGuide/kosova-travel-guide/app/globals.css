@@ -15,9 +15,13 @@
     Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 
   /* Enterprise Colors */
+  --enterprise-skyblue: #1989b9;
+  --enterprise-lightblue: #022c5c;
   --enterprise-blue: #0f172a;
   --enterprise-gray: #323232;
   --enterprise-yellow: #d0a650;
+  --enterprise-lightyellow: #f7c979;
+
   --enterprise-lightGray: #f8fafc;
   --enterprise-black: #1e293b;
   --border-color: #ffffff; /* Explicit border color */
@@ -29,6 +33,7 @@
 
 body {
   font-family: var(--font-sans);
+  background-attachment: fixed;
 }
 
 .serif {

@@ -2,11 +2,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
 
@@ -32,10 +35,9 @@ export default function Navbar() {
 
   useEffect(() => setIsOpen(false), [router.asPath]);
 
-  const isActive = (path) =>
-    router.pathname === path
-      ? "text-[var(--enterprise-blue)] font-semibold"
-      : "text-[var(--link-color)] hover:text-[var(--enterprise-blue)/90]";
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
     <nav
@@ -43,31 +45,37 @@ export default function Navbar() {
                   backdrop-blur-lg `}
     >
       <div className="max-w-[1440px] mx-auto">
-        <div className="relative flex h-[5rem] pl-8 pr-6">
+        <div className="relative flex h-[5rem] px-8">
           {/* Blurred background wrapper */}
           <div
-            className="absolute inset-0 -z-[1] rounded-b-2xl lg:rounded-full 
-                        border-2 border-[var(--border-color)] 
-                        bg-[rgba(214,215,216,0.25)]"
+            className={`
+              absolute inset-0 -z-[1] rounded-full 
+              border-2 border-[var(--border-color)] 
+              bg-[rgba(214,215,216,0.25)] shadow-xl
+               
+            `}
           />
 
           <div className="flex items-center justify-between w-full">
             {/* Left Section - Logo */}
-            <Link href="/" className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-1">
               {/* Logo */}
               <img
                 src="/images/logo.png" // Replace with your logo file path
                 alt="Kosovo Travel Logo"
-                className="w-14 h-11" // Adjust size as needed
+                className="w-16 h-18 sm:w-20 sm:h-22" // Adjust size as needed
               />
 
               {/* Stacked Text */}
-              <div className="flex flex-col justify-center">
-                <span className="text-[var(--enterprise-blue)] text-3xl font-medium pl-0.5 ">
-                  Kosova
+              <div className="hidden sm:flex sm:flex-col sm:justify-center sm:pt-10 sm:pr-11">
+                <span className="pb-10 flex items-center text-[var(--enterprise-blue)] hover:text-[var(--enterprise-black)] text-2xl font-bold">
+                  Kosova Travel
                 </span>
-                <span className="text-[var(--enterprise-blue)] text-lg font-semibold ">
-                  Travel Guide
+              </div>
+
+              <div className="sm:hidden flex items-center">
+                <span className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-black)] text-xl font-bold">
+                  Kosova Travel
                 </span>
               </div>
             </Link>
@@ -163,9 +171,9 @@ export default function Navbar() {
 
               {/* Sign Up Button */}
               <Link
-                href="/signup"
+                href="/auth/signup"
                 className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
-                         text-white hover:bg-[var(--enterprise-black)] ] border-3 hover:border-amber-200 transition-all duration-300"
+                         text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
               >
                 Sign Up
               </Link>
@@ -173,7 +181,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-white text-2xl"
+              className="md:hidden text-[var-(--enterpris-blue)] text-4xl"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? "×" : "≡"}
@@ -184,49 +192,40 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div
-            className="md:hidden bg-[var(--enterprise-blue)]/90 backdrop-blur-lg 
-                          rounded-b-2xl mt-2"
+            className="md:hidden rounded-t-2xl rounded-b-2xl lg:rounded-full 
+                        border-2 border-[var(--border-color)] mt-1
+                        bg-[rgba(214,215,216,0.25)] "
           >
             <div className="flex flex-col space-y-4 p-6">
-              <Link href="/" className={`navbar-link ${isActive("/")}`}>
+              <Link href="/" className="navbar-link">
                 Home
               </Link>
-              <Link
-                href="/destinations"
-                className={`navbar-link ${isActive("/destinations")}`}
-              >
+              <Link href="/destinations" className="navbar-link">
                 Destinations
               </Link>
-              <Link
-                href="/travel-tips"
-                className={`navbar-link ${isActive("/travel-tips")}`}
-              >
+              <Link href="/travel-tips" className="navbar-link">
                 Travel Tips
               </Link>
-              <Link
-                href="/accommodations"
-                className={`navbar-link ${isActive("/accommodations")}`}
-              >
+              <Link href="/accommodations" className="navbar-link">
                 Accommodations
               </Link>
-              <Link
-                href="/tours"
-                className={`navbar-link ${isActive("/tours")}`}
-              >
+              <Link href="/tours" className="navbar-link">
                 Tours
               </Link>
               <div className="flex flex-col gap-4 mt-4">
                 <Link
                   href="/auth/login"
-                  className="px-4 py-2 rounded-full bg-white 
-                           text-[var(--enterprise-blue)] hover:bg-gray-100 transition-all duration-300"
+                  className="px-4 py-2 mx-10 text-center rounded-full bg-white font-semibold text-lg 
+                         text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
                 >
                   Login
                 </Link>
+
+                {/* Sign Up Button */}
                 <Link
-                  href="/signup"
-                  className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)] 
-                           text-white hover:bg-white hover:text-[var(--enterprise-blue)] transition-all duration-300"
+                  href="/auth/signup"
+                  className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                         text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
                 >
                   Sign Up
                 </Link>

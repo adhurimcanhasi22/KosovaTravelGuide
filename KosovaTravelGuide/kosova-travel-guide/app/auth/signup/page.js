@@ -5,7 +5,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export default function Signup() {
+export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -26,7 +26,6 @@ export default function Signup() {
       [name]: type === "checkbox" ? checked : value,
     });
 
-    // Clear errors when user types
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -38,33 +37,28 @@ export default function Signup() {
   const validateForm = () => {
     const newErrors = {};
 
-    // Full Name validation
     if (!formData.fullName.trim()) {
       newErrors.fullName = "Full name is required";
     }
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email address is invalid";
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Password is required";
     } else if (formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
-    // Confirm Password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.confirmPassword !== formData.password) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    // Terms agreement validation
     if (!formData.agreeTerms) {
       newErrors.agreeTerms = "You must agree to the Terms and Privacy Policy";
     }
@@ -75,34 +69,18 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset any previous signup errors
     setSignupError("");
 
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      // Simulate API call to register (will be replaced with actual API integration)
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // This is a frontend-only demo without actual authentication
-      // In a real app, this would register the user with a backend API
-
-      console.log("Signup attempt with:", formData.email);
-
-      // Simulate successful signup
       localStorage.setItem("isLoggedIn", "true");
-
-      // Redirect after successful signup
       router.push("/");
     } catch (error) {
       setSignupError("Registration failed. Please try again later.");
-      console.error("Signup error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -121,44 +99,14 @@ export default function Signup() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <div className="flex justify-center">
-              <Link href="/">
-                <span className="flex items-center text-kosovo-blue text-2xl font-bold">
-                  <svg
-                    className="w-10 h-10 mr-2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 2L2 7L12 12L22 7L12 2Z"
-                      fill="#D0A650"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 17L12 22L22 17"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 12L12 17L22 12"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                  <span>Kosovo Travel</span>
-                </span>
-              </Link>
-            </div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--enterprise-gray)] pt-10">
               Create your account
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-[var(--enterprise-lightgray)]">
               Already have an account?{" "}
               <Link
                 href="/auth/login"
-                className="font-medium text-kosovo-blue hover:text-kosovo-blue/80"
+                className="font-medium text-blue-600 hover:text-blue-400"
               >
                 Sign in
               </Link>
@@ -168,9 +116,6 @@ export default function Signup() {
           {signupError && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
               <div className="flex">
-                <div className="flex-shrink-0">
-                  <i className="fas fa-exclamation-circle text-red-500"></i>
-                </div>
                 <div className="ml-3">
                   <p className="text-sm text-red-700">{signupError}</p>
                 </div>
@@ -181,9 +126,6 @@ export default function Signup() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="fullName" className="sr-only">
-                  Full Name
-                </label>
                 <input
                   id="fullName"
                   name="fullName"
@@ -191,7 +133,7 @@ export default function Signup() {
                   autoComplete="name"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className={`appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-kosovo-blue focus:border-kosovo-blue focus:z-10 sm:text-sm ${
+                  className={`appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
                     errors.fullName ? "border-red-500" : ""
                   }`}
                   placeholder="Full Name"
@@ -202,9 +144,6 @@ export default function Signup() {
               </div>
 
               <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
                 <input
                   id="email"
                   name="email"
@@ -212,7 +151,7 @@ export default function Signup() {
                   autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-kosovo-blue focus:border-kosovo-blue focus:z-10 sm:text-sm ${
+                  className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
                     errors.email ? "border-red-500" : ""
                   }`}
                   placeholder="Email address"
@@ -223,9 +162,6 @@ export default function Signup() {
               </div>
 
               <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
                 <input
                   id="password"
                   name="password"
@@ -233,7 +169,7 @@ export default function Signup() {
                   autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-kosovo-blue focus:border-kosovo-blue focus:z-10 sm:text-sm ${
+                  className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
                     errors.password ? "border-red-500" : ""
                   }`}
                   placeholder="Password"
@@ -244,9 +180,6 @@ export default function Signup() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="sr-only">
-                  Confirm Password
-                </label>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -254,7 +187,7 @@ export default function Signup() {
                   autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-kosovo-blue focus:border-kosovo-blue focus:z-10 sm:text-sm ${
+                  className={`appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
                     errors.confirmPassword ? "border-red-500" : ""
                   }`}
                   placeholder="Confirm Password"
@@ -274,25 +207,25 @@ export default function Signup() {
                 type="checkbox"
                 checked={formData.agreeTerms}
                 onChange={handleChange}
-                className={`h-4 w-4 text-kosovo-blue focus:ring-kosovo-blue border-gray-300 rounded ${
+                className={`h-4 w-4 text-[var(--enterprise-blue)] focus:ring-[var(--enterprise-blue)] border-gray-300 rounded ${
                   errors.agreeTerms ? "border-red-500" : ""
                 }`}
               />
               <label
                 htmlFor="agree-terms"
-                className="ml-2 block text-sm text-gray-900"
+                className="ml-2 block text-sm text-[var(--enterprise-lightgray)]"
               >
                 I agree to the{" "}
                 <a
                   href="#"
-                  className="text-kosovo-blue hover:text-kosovo-blue/80"
+                  className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
                 >
-                  Terms of Service
+                  Terms
                 </a>{" "}
                 and{" "}
                 <a
                   href="#"
-                  className="text-kosovo-blue hover:text-kosovo-blue/80"
+                  className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
                 >
                   Privacy Policy
                 </a>
@@ -306,22 +239,32 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-kosovo-blue hover:bg-kosovo-blue/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kosovo-blue"
+                className="w-full py-2 px-4 rounded-md text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--enterprise-blue)] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
-                  <>
-                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                      <i className="fas fa-spinner fa-spin"></i>
-                    </span>
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
                     Creating account...
-                  </>
+                  </span>
                 ) : (
-                  <>
-                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                      <i className="fas fa-user-plus"></i>
-                    </span>
-                    Create account
-                  </>
+                  "Create Account"
                 )}
               </button>
             </div>
@@ -335,11 +278,16 @@ export default function Signup() {
           </form>
 
           <div className="mt-4 text-center">
+            <Link href="/">
+              {" "}
+              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>{" "}
+            </Link>
+
             <Link
               href="/"
-              className="font-medium text-kosovo-blue hover:text-kosovo-blue/80"
+              className="mr-4 font-medium text-lg text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)] transition-colors duration-200"
             >
-              <i className="fas fa-arrow-left mr-2"></i> Back to Home
+              Back to Home
             </Link>
           </div>
         </div>

@@ -104,44 +104,14 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <div className="flex justify-center">
-              <Link href="/">
-                <span className="flex items-center text-kosovo-blue text-2xl font-bold">
-                  <svg
-                    className="w-10 h-10 mr-2"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12 2L2 7L12 12L22 7L12 2Z"
-                      fill="#D0A650"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 17L12 22L22 17"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M2 12L12 17L22 12"
-                      stroke="#244AA5"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                  <span>Kosovo Travel</span>
-                </span>
-              </Link>
-            </div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--enterprise-gray)] pt-10">
               Sign in to your account
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            <p className="mt-2 text-center text-sm text-[var(--enterprise-lightgray)]">
               Or{" "}
               <Link
                 href="/auth/signup"
-                className="font-medium text-blue-500 hover:text-blue-400"
+                className="font-medium text-blue-600 hover:text-blue-400"
               >
                 create a new account
               </Link>
@@ -217,7 +187,7 @@ export default function Login() {
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-900"
+                  className="ml-2 block text-sm text-[var(--enterprise-lightgray)]"
                 >
                   Remember me
                 </label>
@@ -226,7 +196,7 @@ export default function Login() {
               <div className="text-sm">
                 <a
                   href="#"
-                  className="font-medium text-kosovo-blue hover:text-kosovo-blue/80"
+                  className="font-medium text-[var-(--enterprise-blue)] hover:text-[var-(--enterprise-blue)]"
                 >
                   Forgot your password?
                 </a>
@@ -237,22 +207,32 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-kosovo-blue hover:bg-kosovo-blue/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-kosovo-blue"
+                className="cursor-pointer w-full py-2 px-4 rounded-md text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--enterprise-blue)] focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
-                  <>
-                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                      <i className="fas fa-spinner fa-spin"></i>
-                    </span>
+                  <span className="flex items-center justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
                     Signing in...
-                  </>
+                  </span>
                 ) : (
-                  <>
-                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                      <i className="fas fa-lock"></i>
-                    </span>
-                    Sign in
-                  </>
+                  "Sign In"
                 )}
               </button>
             </div>
@@ -266,11 +246,16 @@ export default function Login() {
           </form>
 
           <div className="mt-4 text-center">
+            <Link href="/">
+              {" "}
+              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>{" "}
+            </Link>
+
             <Link
               href="/"
-              className="font-medium text-kosovo-blue hover:text-kosovo-blue/80"
+              className="mr-4 font-medium text-lg text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)] transition-colors duration-200"
             >
-              <i className="fas fa-arrow-left mr-2"></i> Back to Home
+              Back to Home
             </Link>
           </div>
         </div>
