@@ -36,6 +36,7 @@ const UserSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  verified: Boolean,
 });
 
 const User = mongoose.model('User', UserSchema);

@@ -1,19 +1,42 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap");
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&display=swap');
 
-@font-face {
-  font-family: "SwissNow";
-  src: url("/fonts/SwissNow-Regular.woff2") format("woff2"),
-    url("/fonts/SwissNow-Regular.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
-:root {
-  --font-sans: "SwissNow", ui-sans-serif, system-ui, sans-serif,
-    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
 
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+:root {
   /* Enterprise Colors */
   --enterprise-skyblue: #1989b9;
   --enterprise-lightblue: #022c5c;
@@ -32,18 +55,13 @@
 }
 
 body {
-  font-family: var(--font-sans);
   background-attachment: fixed;
 }
-
-.serif {
-  font-family: var(--font-serif);
-}
-
+/* Tailwind CSS */
 /* Base styles */
 @layer base {
   body {
-    @apply bg-[var(--background-color)] text-[var(--enterprise-gray)] font-sans;
+    @apply bg-[var(--background-color)] text-[var(--enterprise-gray)];
   }
   * {
     @apply border-[var(--border-color)] outline-[var(--border-color)]/50;
