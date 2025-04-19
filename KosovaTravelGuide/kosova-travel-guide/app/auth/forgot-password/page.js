@@ -1,3 +1,17 @@
+// app/auth/forgot-password/page.js
+// const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   await axios.post(
+//     `${process.env.NEXT_PUBLIC_API_URL}/user/requestPasswordReset`,
+//     {
+//       email: formData.email,
+//       redirectUrl: 'http://localhost:3000/reset-password',
+//     }
+//   );
+
+//   setSuccess(true);
+// };
 'use client';
 import axios from 'axios';
 import { useState } from 'react';
@@ -5,23 +19,22 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function Login() {
+export default function ForgotPassword() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    rememberMe: false,
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     });
 
     // Clear errors when user types
@@ -43,44 +56,34 @@ export default function Login() {
       newErrors.email = 'Email address is invalid';
     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  // app/auth/login/page.js
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoginError('');
+    setErrorMessage('');
+    setSuccessMessage('');
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/signin`,
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/requestPasswordReset`,
         {
           email: formData.email,
-          password: formData.password,
+          redirectUrl: 'http://localhost:3000/reset-password/', // Backend will use this URL for the reset link
         }
       );
 
-      if (response.data.status === 'SUCCESS') {
-        // Store user data
-        localStorage.setItem('user', JSON.stringify(response.data.data[0]));
-        router.push('/dashboard'); // Redirect to protected route
-      } else {
-        setLoginError(response.data.message);
-      }
+      // If the request succeeds, show a success message
+      setSuccessMessage('A password reset link has been sent to your email.');
     } catch (error) {
-      setLoginError(
-        error.response?.data?.message || 'Login failed. Please try again.'
+      // Handle error responses from the backend
+      setErrorMessage(
+        error.response?.data?.message || 'An error occurred. Please try again.'
       );
     } finally {
       setIsSubmitting(false);
@@ -90,10 +93,10 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>Login | Kosovo Travel Guide</title>
+        <title>Forgot Password | Kosovo Travel Guide</title>
         <meta
           name="description"
-          content="Log in to your Kosovo Travel Guide account for personalized travel recommendations, saved itineraries, and booking management."
+          content="Reset your password for Kosovo Travel Guide. Enter your email to receive a password reset link."
         />
       </Head>
 
@@ -101,27 +104,35 @@ export default function Login() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--enterprise-gray)] pt-10">
-              Sign in to your account
+              Forgot Your Password?
             </h2>
             <p className="mt-2 text-center text-sm text-[var(--enterprise-lightgray)]">
-              Or{' '}
-              <Link
-                href="/auth/signup"
-                className="font-medium text-blue-600 hover:text-blue-400"
-              >
-                create a new account
-              </Link>
+              Enter your email address and we'll send you a link to reset your
+              password.
             </p>
           </div>
 
-          {loginError && (
+          {successMessage && (
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-md">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <i className="fas fa-check-circle text-green-500"></i>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {errorMessage && (
             <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <i className="fas fa-exclamation-circle text-red-500"></i>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm text-red-700">{loginError}</p>
+                  <p className="text-sm text-red-700">{errorMessage}</p>
                 </div>
               </div>
             </div>
@@ -148,54 +159,6 @@ export default function Login() {
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                 )}
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-kosovo-blue focus:border-kosovo-blue focus:z-10 sm:text-sm ${
-                    errors.password ? 'border-red-500' : ''
-                  }`}
-                  placeholder="Password"
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-kosovo-blue focus:ring-kosovo-blue border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-[var(--enterprise-lightgray)]"
-                >
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <a
-                  href="/auth/forgot-password"
-                  className="font-medium text-[var-(--enterprise-blue)] hover:text-[var-(--enterprise-blue)]"
-                >
-                  Forgot your password?
-                </a>
               </div>
             </div>
 
@@ -225,26 +188,19 @@ export default function Login() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Signing in...
+                    Sending...
                   </span>
                 ) : (
-                  'Sign In'
+                  'Send Reset Link'
                 )}
               </button>
             </div>
           </form>
 
           <div className="mt-4 text-center">
-            <Link href="/">
-              {' '}
-              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>{' '}
-            </Link>
-
-            <Link
-              href="/"
-              className="mr-4 font-medium text-lg text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)] transition-colors duration-200"
-            >
-              Back to Home
+            <Link href="/auth/login">
+              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>
+              Back to Login
             </Link>
           </div>
         </div>

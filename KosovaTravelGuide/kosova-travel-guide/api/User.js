@@ -47,13 +47,12 @@ transporter.verify((err, success) => {
 });
 
 router.post('/signup', (req, res) => {
-  let { name, email, password } = req.body;
-  name = name.trim();
-  email = email.trim();
-  password = password.trim();
-
-  if (name == '' || email == '' || password == '') {
-    res.json({
+  const { name = '', email = '', password = '' } = req.body;
+  const trimmedName = name.toString().trim();
+  const trimmedEmail = email.toString().trim();
+  const trimmedPassword = password.toString().trim();
+  if (trimmedName == '' || trimmedEmail == '' || trimmedPassword == '') {
+    return res.json({
       status: 'FAILED',
       message: 'Please fill all the fields',
     });
@@ -143,9 +142,8 @@ const sendVerificationEmail = ({ _id, email }, res) => {
     from: process.env.AUTH_EMAIL,
     to: email,
     subject: 'Verify your email',
-    html: `<p>Verify your email address to complete the signup to your account.</p><p>This link <b>expires in 6 hours.</b></p><p>Press <a href=${
-      currentUrl + 'user/verify/' + _id + '/' + uniqueString
-    }> here<a/> to proceed.</p>`,
+    html: `<p>Verify your email address...</p>
+           <a href="${currentUrl}user/verify/${_id}/${uniqueString}">Verify Email</a>`,
   };
 
   // hash the uniqueString
@@ -201,7 +199,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
 router.get('/verify/:userId/:uniqueString', (req, res) => {
   let { userId, uniqueString } = req.params;
 
-  UserVerification.find({ userId })
+  UserVerification.find({ userId: req.params.userId })
     .then((result) => {
       if (result.length > 0) {
         // user verification record exist so we proceed
@@ -219,19 +217,25 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                 .then(() => {
                   let message =
                     'Link has expired. Please sign up again to create a new account.';
-                  res.redirect(`/user/verified/error=true&message=${message}`);
+                  res.redirect(
+                    `http://localhost:3000/verified-error?message=${message}`
+                  );
                 })
                 .catch((error) => {
                   let message =
                     'Clearing user with expired unique string failed';
-                  res.redirect(`/user/verified/error=true&message=${message}`);
+                  res.redirect(
+                    `http://localhost:3000/verified-error?message=${message}`
+                  );
                 });
             })
             .catch((error) => {
               console.log(error);
               let message =
                 'An error occurred while clearing expired user verification record.';
-              res.redirect(`/user/verified/error=true&message=${message}`);
+              res.redirect(
+                `http://localhost:3000/verified-error?message=${message}`
+              );
             });
         } else {
           // valid record exists so we validate it
@@ -247,19 +251,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                   .then(() => {
                     UserVerification.deleteOne({ userId })
                       .then(() => {
-                        res.sendFile(
-                          path.join(
-                            __dirname,
-                            '../app/user/verified/success.html'
-                          )
-                        );
+                        res.redirect(`http://localhost:3000/verified-success`);
                       })
                       .catch((error) => {
                         console.log(error);
                         let message =
                           'An error occurred while finalizing successful verification.';
                         res.redirect(
-                          `/user/verified/error=true&message=${message}`
+                          `http://localhost:3000/verified-error?message=${message}`
                         );
                       });
                   })
@@ -268,44 +267,40 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                     let message =
                       'An error occurred while updating user record.';
                     res.redirect(
-                      `/user/verified/error=true&message=${message}`
+                      `http://localhost:3000/verified-error?message=${message}`
                     );
                   });
               } else {
                 // exisitng record but incorrect verification details passed
                 let message =
                   'Invalid verification details passed. Check your inbox.';
-                res.redirect(`/user/verified/error=true&message=${message}`);
+                res.redirect(
+                  `http://localhost:3000/verified-error?message=${message}`
+                );
               }
             })
             .catch((error) => {
               let message = 'An error occurred while comparing unique strings.';
-              res.redirect(`/user/verified/error=true&message=${message}`);
+              res.redirect(
+                `http://localhost:3000/verified-error?message=${message}`
+              );
             });
         }
       } else {
         // user verification doesn't exist
         let message =
           'Account record doesn/t exist or has been verified already. Please log in. ';
-        res.redirect(`/user/verified/error=true&message=${message}`);
+        res.redirect(`http://localhost:3000/verified-error?message=${message}`);
       }
     })
     .catch((error) => {
       console.log(error);
       let message =
         'An error occurred while checking for exisiting user verification record';
-      res.redirect(`/user/verified/error=true&message=${message}`);
+      res.redirect(`http://localhost:3000/verified-error?message=${message}`);
     });
 });
 
-//verified page route
-router.get('/verified', (req, res) => {
-  if (req.query.error === 'true') {
-    res.sendFile(path.join(__dirname, '../app/user/verified/error.html'));
-  } else {
-    res.sendFile(path.join(__dirname, '../app/user/verified/success.html'));
-  }
-});
 // Signin
 router.post('/signin', (req, res) => {
   let { email, password } = req.body;

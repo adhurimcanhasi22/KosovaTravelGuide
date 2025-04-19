@@ -1,35 +1,35 @@
-"use client";
-
-import { useState } from "react";
-import Head from "next/head";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+'use client';
+import axios from 'axios';
+import { useState } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
     agreeTerms: false,
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [signupError, setSignupError] = useState("");
+  const [signupError, setSignupError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     });
 
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: "",
+        [name]: '',
       });
     }
   };
@@ -38,49 +38,66 @@ export default function SignUp() {
     const newErrors = {};
 
     if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+      newErrors.fullName = 'Full name is required';
     }
 
     if (!formData.email) {
-      newErrors.email = "Email is required";
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email address is invalid";
+      newErrors.email = 'Email address is invalid';
     }
 
     if (!formData.password) {
-      newErrors.password = "Password is required";
+      newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
+      newErrors.password =
+        'Password must be at least 8 characters and contain at least one number';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     if (!formData.agreeTerms) {
-      newErrors.agreeTerms = "You must agree to the Terms and Privacy Policy";
+      newErrors.agreeTerms = 'You must agree to the Terms and Privacy Policy';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Similar structure to login page, with:
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSignupError("");
+    setSignupError('');
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      localStorage.setItem("isLoggedIn", "true");
-      router.push("/");
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/signup`,
+        {
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      if (response.data.status === 'PENDING') {
+        router.push('/auth/verify-email');
+      } else {
+        setSignupError(
+          response.data.message || 'Signup failed. Please try again.'
+        );
+      }
     } catch (error) {
-      setSignupError("Registration failed. Please try again later.");
+      setSignupError(
+        error.response?.data?.message || 'Signup failed. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +120,7 @@ export default function SignUp() {
               Create your account
             </h2>
             <p className="mt-2 text-center text-sm text-[var(--enterprise-lightgray)]">
-              Already have an account?{" "}
+              Already have an account?{' '}
               <Link
                 href="/auth/login"
                 className="font-medium text-blue-600 hover:text-blue-400"
@@ -134,7 +151,7 @@ export default function SignUp() {
                   value={formData.fullName}
                   onChange={handleChange}
                   className={`appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
-                    errors.fullName ? "border-red-500" : ""
+                    errors.fullName ? 'border-red-500' : ''
                   }`}
                   placeholder="Full Name"
                 />
@@ -152,7 +169,7 @@ export default function SignUp() {
                   value={formData.email}
                   onChange={handleChange}
                   className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
-                    errors.email ? "border-red-500" : ""
+                    errors.email ? 'border-red-500' : ''
                   }`}
                   placeholder="Email address"
                 />
@@ -170,7 +187,7 @@ export default function SignUp() {
                   value={formData.password}
                   onChange={handleChange}
                   className={`appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
-                    errors.password ? "border-red-500" : ""
+                    errors.password ? 'border-red-500' : ''
                   }`}
                   placeholder="Password"
                 />
@@ -188,7 +205,7 @@ export default function SignUp() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className={`appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[var(--enterprise-blue)] focus:border-[var(--enterprise-blue)] focus:z-10 sm:text-sm ${
-                    errors.confirmPassword ? "border-red-500" : ""
+                    errors.confirmPassword ? 'border-red-500' : ''
                   }`}
                   placeholder="Confirm Password"
                 />
@@ -208,21 +225,21 @@ export default function SignUp() {
                 checked={formData.agreeTerms}
                 onChange={handleChange}
                 className={`h-4 w-4 text-[var(--enterprise-blue)] focus:ring-[var(--enterprise-blue)] border-gray-300 rounded ${
-                  errors.agreeTerms ? "border-red-500" : ""
+                  errors.agreeTerms ? 'border-red-500' : ''
                 }`}
               />
               <label
                 htmlFor="agree-terms"
                 className="ml-2 block text-sm text-[var(--enterprise-lightgray)]"
               >
-                I agree to the{" "}
+                I agree to the{' '}
                 <a
                   href="#"
                   className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
                 >
                   Terms
-                </a>{" "}
-                and{" "}
+                </a>{' '}
+                and{' '}
                 <a
                   href="#"
                   className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
@@ -264,7 +281,7 @@ export default function SignUp() {
                     Creating account...
                   </span>
                 ) : (
-                  "Create Account"
+                  'Create Account'
                 )}
               </button>
             </div>
@@ -279,8 +296,8 @@ export default function SignUp() {
 
           <div className="mt-4 text-center">
             <Link href="/">
-              {" "}
-              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>{" "}
+              {' '}
+              <i className="fas fa-arrow-left mr-1 text-[var(--enterprise-yellow)] hover:text-[var(--enterprise-lightyellow)]"></i>{' '}
             </Link>
 
             <Link
