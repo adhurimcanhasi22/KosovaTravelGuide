@@ -70,6 +70,24 @@ body {
     @apply text-[var(--link-color)] hover:text-[var(--enterprise-yellow)];
   }
 }
+@keyframes dotPulse {
+  0%,
+  44% {
+    transform: translateY(0);
+  }
+  28% {
+    opacity: 0.4;
+    transform: translateY(-4px);
+  }
+  44% {
+    opacity: 0.2;
+    transform: translateY(-4px);
+  }
+}
+
+.animate-dotPulse {
+  animation: dotPulse 1.8s ease-in-out infinite;
+}
 
 /* Components */
 @layer components {

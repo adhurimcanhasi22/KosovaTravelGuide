@@ -1,10 +1,10 @@
-import "../app/globals.css";
-import Layout from "@/components/Layout";
-import { Signika_Negative } from "next/font/google";
+import '../app/globals.css';
+import Layout from '@/components/Layout';
+import { Signika_Negative } from 'next/font/google';
 
 const signikaNegative = Signika_Negative({
-  subsets: ["latin"], // Specify the character set
-  weight: ["300", "400", "500", "600", "700"], // Include all weights
+  subsets: ['latin'], // Specify the character set
+  weight: ['300', '400', '500', '600', '700'], // Include all weights
 });
 
 export default function RootLayout({ children }) {
@@ -18,6 +18,10 @@ export default function RootLayout({ children }) {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
