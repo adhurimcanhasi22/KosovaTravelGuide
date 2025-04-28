@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -14,7 +14,7 @@ export default function Footer() {
               Discover the beauty of Kosovo, Europe's youngest country with rich
               history, stunning landscapes and warm hospitality.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 ">
               <a
                 href="https://facebook.com"
                 target="_blank"
