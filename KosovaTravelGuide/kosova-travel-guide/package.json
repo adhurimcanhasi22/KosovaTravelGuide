@@ -7,17 +7,58 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "tailwind":"tailwindcss"
+    "tailwind": "tailwindcss"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-slot": "^1.1.2",
+    "axios": "^1.8.4",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "connect-mongo": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "lucide-react": "^0.485.0",
+    "mailgun-js": "^0.22.0",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.2",
     "next": "15.2.4",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.9",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "tailwind-merge": "^3.0.2",
+    "tw-animate-css": "^1.2.5",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.17",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.17"
-  }
+  },
+  "description": "Welcome to the **Kosovo Travel Guide**, an interactive web platform designed to provide an engaging and informative experience for visitors exploring Kosovo. Our goal is to create a **dynamic, user-friendly, and gamified travel platform** that enhances trip planning with **real-time interactions** and **AI-powered recommendations**.",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adhurimcanhasi22/KosovaTravelGuide.git"
+  },
+  "author": "Adhurim Canhasi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adhurimcanhasi22/KosovaTravelGuide/issues"
+  },
+  "homepage": "https://github.com/adhurimcanhasi22/KosovaTravelGuide#readme"
 }
