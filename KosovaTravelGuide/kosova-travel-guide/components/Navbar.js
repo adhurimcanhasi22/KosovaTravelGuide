@@ -1,8 +1,8 @@
-"use client";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+'use client';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +29,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => setIsOpen(false), [router.asPath]);
@@ -38,6 +38,33 @@ export default function Navbar() {
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  // Check if the user is logged in by checking for the token cookie
+  const isAuthenticated = () => {
+    if (typeof window === 'undefined') {
+      // If running on the server, return false
+      return false;
+    }
+    return document.cookie
+      .split(';')
+      .some((cookie) => cookie.trim().startsWith('token='));
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Send a POST request to the logout endpoint
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`, {
+        method: 'POST',
+        credentials: 'include', // Ensure cookies are sent with the request
+      });
+
+      // Redirect to the login page after logout
+      router.push('/auth/login');
+    } catch (error) {
+      console.error(error);
+      alert('Logout failed. Please try again.');
+    }
+  };
 
   return (
     <nav
@@ -82,7 +109,7 @@ export default function Navbar() {
 
             {/* Center Links */}
             <div className="hidden md:flex items-start space-x-9 ml-2 text-base font-semibold">
-              {" "}
+              {' '}
               {/* Add spacing */}
               <Link href="/" className="navbar-link">
                 Home
@@ -90,7 +117,7 @@ export default function Navbar() {
               {/* Destinations Dropdown */}
               <div
                 className="relative cursor-pointer group"
-                onMouseEnter={() => handleMouseEnter("destinations")}
+                onMouseEnter={() => handleMouseEnter('destinations')}
                 onMouseLeave={handleMouseLeave}
               >
                 <Link href="/destinations" className="flex items-center gap-2">
@@ -112,9 +139,9 @@ export default function Navbar() {
                 {/* Dropdown Content */}
                 <div
                   className={`absolute top-full left-0 mt-0.5 bg-white rounded-lg shadow-lg p-4 w-[200px] z-50 transition-opacity duration-200 ${
-                    dropdownOpen === "destinations"
-                      ? "opacity-100 visible"
-                      : "opacity-0 invisible"
+                    dropdownOpen === 'destinations'
+                      ? 'opacity-100 visible'
+                      : 'opacity-0 invisible'
                   }`}
                 >
                   <ul className="space-y-2">
@@ -160,23 +187,36 @@ export default function Navbar() {
 
             {/* Right Section - Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              {/* Login Button */}
-              <Link
-                href="/auth/login"
-                className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
+              {isAuthenticated() ? (
+                // Show Logout Button if the user is logged in
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-full bg-red-500 font-semibold text-lg 
+                         text-white hover:bg-red-600 border-3 hover:border-amber-200 transition-all duration-300"
+                >
+                  Log Out
+                </button>
+              ) : (
+                // Show Login and Sign Up Buttons if the user is not logged in
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
-              >
-                Login
-              </Link>
+                  >
+                    Login
+                  </Link>
 
-              {/* Sign Up Button */}
-              <Link
-                href="/auth/signup"
-                className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                  {/* Sign Up Button */}
+                  <Link
+                    href="/auth/signup"
+                    className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
-              >
-                Sign Up
-              </Link>
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -184,7 +224,7 @@ export default function Navbar() {
               className="md:hidden text-[var-(--enterpris-blue)] text-4xl"
               onClick={() => setIsOpen(!isOpen)}
             >
-              {isOpen ? "×" : "≡"}
+              {isOpen ? '×' : '≡'}
             </button>
           </div>
         </div>

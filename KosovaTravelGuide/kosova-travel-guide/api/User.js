@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 //mongodb user model
 const User = require('./../models/User');
@@ -24,6 +26,18 @@ const bcrypt = require('bcrypt');
 
 // path for static verified page
 const path = require('path');
+
+// Middleware to parse cookies
+router.use(cookieParser());
+
+// Function to generate JWT
+const generateToken = (user) => {
+  return jwt.sign(
+    { userId: user._id, email: user.email }, // Payload
+    process.env.JWT_SECRET, // Secret key
+    { expiresIn: process.env.JWT_EXPIRATION } // Expiration time
+  );
+};
 
 // nodemailer stuff
 
@@ -331,7 +345,16 @@ router.post('/signin', (req, res) => {
               .compare(password, hashedPassword)
               .then((result) => {
                 if (result) {
-                  //Password matched
+                  //Password matched, generate JWT
+                  //const token = generateToken(user);
+
+                  //Send the JWT as an HTTP-only cookie
+                  //res.cookie('token', token, {
+                  //httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+                  //secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+                  //maxAge: 3600000, // 1 hour (in milliseconds)
+                  // });
+
                   res.json({
                     status: 'SUCCESS',
                     message: 'User signed in successfully',
@@ -369,6 +392,15 @@ router.post('/signin', (req, res) => {
         });
       });
   }
+});
+
+// Logout Route
+router.post('/logout', (req, res) => {
+  // Clear the token cookie
+  res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
+
+  // Respond with success message
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 // Password reset stuff
