@@ -402,6 +402,7 @@ router.post('/signin', (req, res) => {
       });
   }
 });
+
 // Logout Route
 router.post('/logout', (req, res) => {
   // Clear the token cookie
