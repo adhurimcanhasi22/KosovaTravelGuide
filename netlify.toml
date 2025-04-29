@@ -1,5 +1,6 @@
 [build]
-  functions = "netlify/functions" 
+  functions = "netlify/functions"
+  publish = ".next" 
 
 [functions]
   external_node_modules = ["express", "mongoose", "cors", "cookie-parser"]  # Include necessary modules
