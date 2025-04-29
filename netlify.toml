@@ -1,3 +1,10 @@
 [build]
-  command = "npm install && npm run build"
-  publish = ".next"
+  functions = "netlify/functions" 
+
+[functions]
+  external_node_modules = ["express", "mongoose", "cors", "cookie-parser"]  # Include necessary modules
+
+[[redirects]]
+  from = "/api/*"  #  Route all /api/* requests to your function
+  to = "/.netlify/functions/api/:splat" #  :splat captures the rest of the path
+  status = 200

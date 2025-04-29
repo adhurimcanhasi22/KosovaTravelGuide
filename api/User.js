@@ -60,7 +60,7 @@ transporter.verify((err, success) => {
   }
 });
 
-router.post('/signup', (req, res) => {
+router.post('/api/signup', (req, res) => {
   const { name = '', email = '', password = '' } = req.body;
   const trimmedName = name.toString().trim();
   const trimmedEmail = email.toString().trim();
@@ -147,7 +147,7 @@ router.post('/signup', (req, res) => {
 // send verificarion email
 const sendVerificationEmail = ({ _id, email }, res) => {
   // url to be used for verification
-  const currentUrl = 'http://localhost:5000/';
+  const currentUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const uniqueString = uuidv4() + _id;
 
@@ -157,7 +157,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
     to: email,
     subject: 'Verify your email',
     html: `<p>Verify your email address...</p>
-           <a href="${currentUrl}user/verify/${_id}/${uniqueString}">Verify Email</a>`,
+           <a href="${currentUrl}/api/user/verify/${_id}/${uniqueString}">Verify Email</a>`,
   };
 
   // hash the uniqueString
@@ -210,7 +210,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
     });
 };
 // verify email
-router.get('/verify/:userId/:uniqueString', (req, res) => {
+router.get('/api/verify/:userId/:uniqueString', (req, res) => {
   let { userId, uniqueString } = req.params;
 
   UserVerification.find({ userId: req.params.userId })
@@ -322,7 +322,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
 });
 
 // Signin
-router.post('/signin', (req, res) => {
+router.post('/api/signin', (req, res) => {
   let { email, password } = req.body;
   email = email.trim();
   password = password.trim();
@@ -404,7 +404,7 @@ router.post('/signin', (req, res) => {
 });
 
 // Logout Route
-router.post('/logout', (req, res) => {
+router.post('/api/logout', (req, res) => {
   // Clear the token cookie
   res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
 
@@ -413,7 +413,7 @@ router.post('/logout', (req, res) => {
 });
 
 // Password reset stuff
-router.post('/requestPasswordReset', (req, res) => {
+router.post('/api/requestPasswordReset', (req, res) => {
   const { email, redirectUrl } = req.body;
 
   User.find({ email })
@@ -464,11 +464,12 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
         from: process.env.AUTH_EMAIL,
         to: email,
         subject: 'Password Reset',
-        html: `<p>We heard that you forgot your password.</p> <p>Don't worry, use the link below to reset it.</p><p>This link <b>expires in 60 minutes.</b></p>
-        <p>Press <a href=${
-          redirectUrl + '/' + _id + '/' + resetString
-        }> here<a/> to proceed.</p>`,
+        html: `<p>We heard that you forgot your password.</p>
+                <p>Don't worry, use the link below to reset it.</p>
+                <p>This link <b>expires in 60 minutes.</b></p>
+                <p>Press <a href="${redirectUrl}/api/user/reset/${_id}/${resetString}">here</a> to proceed.</p>`,
       };
+
       // hash the reset string
       const saltRounds = 10;
       bcrypt
@@ -530,7 +531,7 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
 };
 
 // Actually reset the password
-router.post('/resetPassword', (req, res) => {
+router.post('/api/resetPassword', (req, res) => {
   let { userId, resetString, newPassword } = req.body;
 
   PasswordReset.find({ userId })
