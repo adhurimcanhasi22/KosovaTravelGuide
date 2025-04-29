@@ -1,6 +1,6 @@
 import Navbar from './Navbar';
 import Footer from './Footer';
-import AIChatbot from '@/components/AIChatbot';
+import AIChatbot from './AIChatbot';
 
 export default function Layout({ children }) {
   return (
