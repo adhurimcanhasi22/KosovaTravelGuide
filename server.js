@@ -9,10 +9,7 @@ const port = 5000;
 // CORS middleware should come FIRST
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000', // Frontend
-      // 'https://your-production-domain.com' // Add this later
-    ],
+    origin: ['https://kosovatravelguide.netlify.app/'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
