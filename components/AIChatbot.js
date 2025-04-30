@@ -16,7 +16,7 @@ const AIChatbot = () => {
   const [inputHeight, setInputHeight] = useState('auto');
   const [initialInputHeight, setInitialInputHeight] = useState(null);
 
-  const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY; // Use environment variable for API Key
+  const API_KEY = process.env.GEMINI_API_KEY; // Use environment variable for API Key
   const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
   const chatBodyRef = useRef(null);
