@@ -1,4 +1,4 @@
-import './globals.css';
+import '../app/globals.css';
 import Layout from '@/components/Layout';
 import { Signika_Negative } from 'next/font/google';
 
