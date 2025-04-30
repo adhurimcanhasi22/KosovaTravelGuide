@@ -10,8 +10,7 @@ const port = 5000;
 app.use(
   cors({
     origin: [
-      'http://localhost:3000', // Frontend
-      // 'https://your-production-domain.com' // Add this later
+      'https://kosovatravelguide.netlify.app/', // Frontend
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
