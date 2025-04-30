@@ -1,11 +1,5 @@
 import './globals.css';
 import Layout from '../components/Layout';
-import { Signika_Negative } from 'next/font/google';
-
-const signikaNegative = Signika_Negative({
-  subsets: ['latin'], // Specify the character set
-  weight: ['300', '400', '500', '600', '700'], // Include all weights
-});
 
 export default function RootLayout({ children }) {
   return (
@@ -27,7 +21,7 @@ export default function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body className={signikaNegative.className}>
+      <body>
         <Layout>{children}</Layout>
       </body>
     </html>
