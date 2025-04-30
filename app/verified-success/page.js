@@ -9,7 +9,7 @@ export default function VerifiedSuccess() {
         </h1>
         <p>You can now log in to your account</p>
         <a
-          href="https://kosovatravelguide.netlify.app/auth/login"
+          href="http://localhost:3000/auth/login"
           className="inline-block mt-10 px-6 py-3 bg-[var(--enterprise-lightblue)] text-white font-medium rounded-lg hover:bg-[var(--enterprise-skyblue)] transition-colors shadow-md hover:shadow-lg"
         >
           Continue to Login

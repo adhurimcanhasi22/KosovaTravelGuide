@@ -76,7 +76,7 @@ export default function ResetPassword() {
     try {
       // Send reset request to backend
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/resetPassword`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/resetPassword`,
         {
           userId: userId,
           resetString: token,

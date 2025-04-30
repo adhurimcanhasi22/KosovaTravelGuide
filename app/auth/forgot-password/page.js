@@ -71,10 +71,10 @@ export default function ForgotPassword() {
 
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/requestPasswordReset`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/requestPasswordReset`,
         {
           email: formData.email,
-          redirectUrl: 'https://kosovatravelguide.netlify.app/reset-password/', // Backend will use this URL for the reset link
+          redirectUrl: 'http://localhost:3000/reset-password/', // Backend will use this URL for the reset link
         }
       );
 
