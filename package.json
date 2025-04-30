@@ -48,10 +48,10 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.0.17",
+    "@tailwindcss/postcss": "^4.1.4",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
-    "tailwindcss": "^4.0.17"
+    "tailwindcss": "^4.1.4"
   },
   "description": "Welcome to the **Kosovo Travel Guide**, an interactive web platform designed to provide an engaging and informative experience for visitors exploring Kosovo. Our goal is to create a **dynamic, user-friendly, and gamified travel platform** that enhances trip planning with **real-time interactions** and **AI-powered recommendations**.",
   "main": "server.js",
