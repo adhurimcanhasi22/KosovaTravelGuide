@@ -1,5 +1,5 @@
-import '../app/globals.css';
-import Layout from '@/components/Layout';
+import './globals.css';
+import Layout from '../components/Layout';
 import { Signika_Negative } from 'next/font/google';
 
 const signikaNegative = Signika_Negative({

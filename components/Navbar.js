@@ -53,7 +53,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       // Send a POST request to the logout endpoint
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`, {
         method: 'POST',
         credentials: 'include', // Ensure cookies are sent with the request
       });
