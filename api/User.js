@@ -352,7 +352,7 @@ router.post('/signin', (req, res) => {
               .then((result) => {
                 if (result) {
                   //Password matched, generate JWT
-                  const token = generateToken(user);
+                  const token = generateToken(User);
 
                   //Send the JWT as an HTTP-only cookie
                   res.cookie('token', token, {
