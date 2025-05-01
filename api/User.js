@@ -352,14 +352,14 @@ router.post('/signin', (req, res) => {
               .then((result) => {
                 if (result) {
                   //Password matched, generate JWT
-                  //const token = generateToken(user);
+                  const token = generateToken(user);
 
                   //Send the JWT as an HTTP-only cookie
-                  //res.cookie('token', token, {
-                  //httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                  //secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-                  //maxAge: 3600000, // 1 hour (in milliseconds)
-                  // });
+                  res.cookie('token', token, {
+                    httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+                    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+                    maxAge: 3600000, // 1 hour (in milliseconds)
+                  });
 
                   res.json({
                     status: 'SUCCESS',
@@ -406,7 +406,7 @@ router.post('/logout', (req, res) => {
   res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
 
   // Respond with success message
-  res.status(200).json({ message: 'Logged out successfully' });
+  res.json({ status: 'SUCCESS', message: 'Logged out successfully' });
 });
 
 // Password reset stuff
