@@ -7,10 +7,11 @@ export default function LogoutButton() {
 
   const handleLogout = async () => {
     try {
-      // Send a POST request to the logout endpoint
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`);
-
-      // Redirect to the login page after logout
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/logout`,
+        {},
+        { withCredentials: true }
+      );
       router.push('/auth/login');
     } catch (error) {
       console.error(error);

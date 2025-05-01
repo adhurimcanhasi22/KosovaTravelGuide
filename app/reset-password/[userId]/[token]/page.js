@@ -74,24 +74,24 @@ export default function ResetPassword() {
     setIsSubmitting(true);
 
     try {
-      // Send reset request to backend
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/user/resetPassword`,
         {
           userId: userId,
           resetString: token,
           newPassword: formData.password,
+        },
+        {
+          withCredentials: true, // Include this if your backend uses cookies/sessions
         }
       );
 
       if (response.data.status === 'SUCCESS') {
-        // Show success message and redirect to login after 3 seconds
         setSuccessMessage('Your password has been reset successfully.');
         setTimeout(() => {
           router.push('/auth/login');
         }, 3000);
       } else {
-        // Display backend error message
         setErrorMessage(response.data.message || 'An error occurred.');
       }
     } catch (error) {

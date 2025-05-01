@@ -87,6 +87,9 @@ export default function SignUp() {
           name: formData.fullName,
           email: formData.email,
           password: formData.password,
+        },
+        {
+          withCredentials: true, // required for cookies/session
         }
       );
 

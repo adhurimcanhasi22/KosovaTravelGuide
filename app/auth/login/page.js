@@ -67,9 +67,11 @@ export default function Login() {
         {
           email: formData.email,
           password: formData.password,
+        },
+        {
+          withCredentials: true, // Important if backend sets cookies
         }
       );
-
       if (response.data.status === 'SUCCESS') {
         router.push('/dashboard'); // Redirect to protected route
       } else {
