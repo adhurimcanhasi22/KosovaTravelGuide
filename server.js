@@ -4,7 +4,7 @@ const cors = require('cors');
 const UserRouter = require('./api/User');
 
 const app = express();
-const port = proccess.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
 // CORS middleware should come FIRST
 app.use(
