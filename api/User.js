@@ -60,7 +60,7 @@ transporter.verify((err, success) => {
   }
 });
 
-router.post('/api/signup', (req, res) => {
+router.post('/signup', (req, res) => {
   const { name = '', email = '', password = '' } = req.body;
   const trimmedName = name.toString().trim();
   const trimmedEmail = email.toString().trim();
@@ -147,7 +147,7 @@ router.post('/api/signup', (req, res) => {
 // send verificarion email
 const sendVerificationEmail = ({ _id, email }, res) => {
   // url to be used for verification
-  const currentUrl = 'https://kosovatravelguide.netlify.app/api/';
+  const currentUrl = 'https://kosovatravelguide.onrender.com/';
 
   const uniqueString = uuidv4() + _id;
 
@@ -210,7 +210,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
     });
 };
 // verify email
-router.get('/api/verify/:userId/:uniqueString', (req, res) => {
+router.get('/verify/:userId/:uniqueString', (req, res) => {
   let { userId, uniqueString } = req.params;
 
   UserVerification.find({ userId: req.params.userId })
@@ -322,7 +322,7 @@ router.get('/api/verify/:userId/:uniqueString', (req, res) => {
 });
 
 // Signin
-router.post('/api/signin', (req, res) => {
+router.post('/signin', (req, res) => {
   let { email, password } = req.body;
   email = email.trim();
   password = password.trim();
@@ -401,7 +401,7 @@ router.post('/api/signin', (req, res) => {
 });
 
 // Logout Route
-router.post('/api/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   // Clear the token cookie
   res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
 
@@ -410,7 +410,7 @@ router.post('/api/logout', (req, res) => {
 });
 
 // Password reset stuff
-router.post('/api/requestPasswordReset', (req, res) => {
+router.post('/requestPasswordReset', (req, res) => {
   const { email, redirectUrl } = req.body;
 
   User.find({ email })
@@ -527,7 +527,7 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
 };
 
 // Actually reset the password
-router.post('/api/resetPassword', (req, res) => {
+router.post('/resetPassword', (req, res) => {
   let { userId, resetString, newPassword } = req.body;
 
   PasswordReset.find({ userId })

@@ -9,7 +9,7 @@ export default function VerifyEmail({ params }) {
     const verifyEmail = async () => {
       try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/user/verify/${params.userId}/${params.token}`
+          `${process.env.NEXT_PUBLIC_API_URL}/user/verify/${params.userId}/${params.token}`
         );
         router.push('/verified-success');
       } catch (error) {
