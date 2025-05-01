@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
 
-// Logout route
+// Logout Route
 router.post('/logout', (req, res) => {
-  res.clearCookie('token'); // Clear token cookie
-  res.status(200).json({ message: 'Logged out successfully' });
+  // Clear the token cookie
+  res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
+
+  // Respond with success message
+  res.json({ status: 'SUCCESS', message: 'Logged out successfully' });
 });
 const handleLogout = async () => {
   try {
