@@ -60,7 +60,7 @@ transporter.verify((err, success) => {
   }
 });
 
-router.post('/signup', (req, res) => {
+router.post('/api/signup', (req, res) => {
   const { name = '', email = '', password = '' } = req.body;
   const trimmedName = name.toString().trim();
   const trimmedEmail = email.toString().trim();
@@ -147,7 +147,7 @@ router.post('/signup', (req, res) => {
 // send verificarion email
 const sendVerificationEmail = ({ _id, email }, res) => {
   // url to be used for verification
-  const currentUrl = 'http://localhost:5000/';
+  const currentUrl = 'https://kosovatravelguide.netlify.app/api/';
 
   const uniqueString = uuidv4() + _id;
 
@@ -210,7 +210,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
     });
 };
 // verify email
-router.get('/verify/:userId/:uniqueString', (req, res) => {
+router.get('/api/verify/:userId/:uniqueString', (req, res) => {
   let { userId, uniqueString } = req.params;
 
   UserVerification.find({ userId: req.params.userId })
@@ -232,14 +232,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                   let message =
                     'Link has expired. Please sign up again to create a new account.';
                   res.redirect(
-                    `http://localhost:3000/verified-error?message=${message}`
+                    `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                   );
                 })
                 .catch((error) => {
                   let message =
                     'Clearing user with expired unique string failed';
                   res.redirect(
-                    `http://localhost:3000/verified-error?message=${message}`
+                    `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                   );
                 });
             })
@@ -248,7 +248,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
               let message =
                 'An error occurred while clearing expired user verification record.';
               res.redirect(
-                `http://localhost:3000/verified-error?message=${message}`
+                `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
               );
             });
         } else {
@@ -265,14 +265,16 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                   .then(() => {
                     UserVerification.deleteOne({ userId })
                       .then(() => {
-                        res.redirect(`http://localhost:3000/verified-success`);
+                        res.redirect(
+                          `https://kosovatravelguide.netlify.app/verified-success`
+                        );
                       })
                       .catch((error) => {
                         console.log(error);
                         let message =
                           'An error occurred while finalizing successful verification.';
                         res.redirect(
-                          `http://localhost:3000/verified-error?message=${message}`
+                          `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                         );
                       });
                   })
@@ -281,7 +283,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                     let message =
                       'An error occurred while updating user record.';
                     res.redirect(
-                      `http://localhost:3000/verified-error?message=${message}`
+                      `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                     );
                   });
               } else {
@@ -289,14 +291,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                 let message =
                   'Invalid verification details passed. Check your inbox.';
                 res.redirect(
-                  `http://localhost:3000/verified-error?message=${message}`
+                  `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                 );
               }
             })
             .catch((error) => {
               let message = 'An error occurred while comparing unique strings.';
               res.redirect(
-                `http://localhost:3000/verified-error?message=${message}`
+                `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
               );
             });
         }
@@ -304,19 +306,23 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
         // user verification doesn't exist
         let message =
           'Account record doesn/t exist or has been verified already. Please log in. ';
-        res.redirect(`http://localhost:3000/verified-error?message=${message}`);
+        res.redirect(
+          `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+        );
       }
     })
     .catch((error) => {
       console.log(error);
       let message =
         'An error occurred while checking for exisiting user verification record';
-      res.redirect(`http://localhost:3000/verified-error?message=${message}`);
+      res.redirect(
+        `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+      );
     });
 });
 
 // Signin
-router.post('/signin', (req, res) => {
+router.post('/api/signin', (req, res) => {
   let { email, password } = req.body;
   email = email.trim();
   password = password.trim();
@@ -395,7 +401,7 @@ router.post('/signin', (req, res) => {
 });
 
 // Logout Route
-router.post('/logout', (req, res) => {
+router.post('/api/logout', (req, res) => {
   // Clear the token cookie
   res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
 
@@ -404,7 +410,7 @@ router.post('/logout', (req, res) => {
 });
 
 // Password reset stuff
-router.post('/requestPasswordReset', (req, res) => {
+router.post('/api/requestPasswordReset', (req, res) => {
   const { email, redirectUrl } = req.body;
 
   User.find({ email })
@@ -521,7 +527,7 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
 };
 
 // Actually reset the password
-router.post('/resetPassword', (req, res) => {
+router.post('/api/resetPassword', (req, res) => {
   let { userId, resetString, newPassword } = req.body;
 
   PasswordReset.find({ userId })
