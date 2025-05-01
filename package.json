@@ -48,6 +48,9 @@
     "tw-animate-css": "^1.2.8",
     "uuid": "^11.1.0"
   },
+  "engines" : {
+    "node": "v18.19.1"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.4",
     "autoprefixer": "^10.4.21",
