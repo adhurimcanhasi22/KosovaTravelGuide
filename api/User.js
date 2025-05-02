@@ -233,14 +233,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                   let message =
                     'Link has expired. Please sign up again to create a new account.';
                   res.redirect(
-                    `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                    `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
                   );
                 })
                 .catch((error) => {
                   let message =
                     'Clearing user with expired unique string failed';
                   res.redirect(
-                    `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                    `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
                   );
                 });
             })
@@ -249,7 +249,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
               let message =
                 'An error occurred while clearing expired user verification record.';
               res.redirect(
-                `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
               );
             });
         } else {
@@ -267,7 +267,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                     UserVerification.deleteOne({ userId })
                       .then(() => {
                         res.redirect(
-                          `https://kosovatravelguide.netlify.app/verified-success`
+                          `https://kosovatravelguide.vercel.app/verified-success`
                         );
                       })
                       .catch((error) => {
@@ -275,7 +275,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                         let message =
                           'An error occurred while finalizing successful verification.';
                         res.redirect(
-                          `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                          `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
                         );
                       });
                   })
@@ -284,7 +284,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                     let message =
                       'An error occurred while updating user record.';
                     res.redirect(
-                      `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                      `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
                     );
                   });
               } else {
@@ -292,14 +292,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                 let message =
                   'Invalid verification details passed. Check your inbox.';
                 res.redirect(
-                  `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                  `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
                 );
               }
             })
             .catch((error) => {
               let message = 'An error occurred while comparing unique strings.';
               res.redirect(
-                `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+                `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
               );
             });
         }
@@ -308,7 +308,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
         let message =
           'Account record doesn/t exist or has been verified already. Please log in. ';
         res.redirect(
-          `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+          `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
         );
       }
     })
@@ -317,7 +317,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
       let message =
         'An error occurred while checking for exisiting user verification record';
       res.redirect(
-        `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
+        `https://kosovatravelguide.vercel.app/verified-error?message=${message}`
       );
     });
 });
