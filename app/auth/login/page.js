@@ -73,7 +73,8 @@ export default function Login() {
         }
       );
       if (response.data.status === 'SUCCESS') {
-        router.push('/dashboard'); // Redirect to protected route
+        console.log('Login success, redirecting to dashboard...');
+        router.push('/dashboard');
       } else {
         setLoginError(response.data.message);
       }

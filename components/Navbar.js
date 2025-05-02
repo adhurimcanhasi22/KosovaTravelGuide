@@ -39,17 +39,6 @@ export default function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
-  // Check if the user is logged in by checking for the token cookie
-  const isAuthenticated = () => {
-    if (typeof window === 'undefined') {
-      // If running on the server, return false
-      return false;
-    }
-    return document.cookie
-      .split(';')
-      .some((cookie) => cookie.trim().startsWith('token='));
-  };
-
   const handleLogout = async () => {
     try {
       // Send a POST request to the logout endpoint
@@ -187,36 +176,24 @@ export default function Navbar() {
 
             {/* Right Section - Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              {isAuthenticated() ? (
-                // Show Logout Button if the user is logged in
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 rounded-full bg-red-500 font-semibold text-lg 
-                         text-white hover:bg-red-600 border-3 hover:border-amber-200 transition-all duration-300"
-                >
-                  Log Out
-                </button>
-              ) : (
-                // Show Login and Sign Up Buttons if the user is not logged in
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
+              <>
+                <Link
+                  href="/auth/login"
+                  className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
-                  >
-                    Login
-                  </Link>
+                >
+                  Login
+                </Link>
 
-                  {/* Sign Up Button */}
-                  <Link
-                    href="/auth/signup"
-                    className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                {/* Sign Up Button */}
+                <Link
+                  href="/auth/signup"
+                  className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              )}
+                >
+                  Sign Up
+                </Link>
+              </>
             </div>
 
             {/* Mobile Menu Button */}
