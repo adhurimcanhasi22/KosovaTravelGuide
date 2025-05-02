@@ -26,6 +26,7 @@ const bcrypt = require('bcrypt');
 
 // path for static verified page
 const path = require('path');
+const { NONAME } = require('dns');
 
 // Middleware to parse cookies
 router.use(cookieParser());
@@ -357,7 +358,8 @@ router.post('/signin', (req, res) => {
                   //Send the JWT as an HTTP-only cookie
                   res.cookie('token', token, {
                     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+                    secure: true,
+                    sameSite: 'None', // Only send over HTTPS in production
                     maxAge: 3600000, // 1 hour (in milliseconds)
                   });
 
