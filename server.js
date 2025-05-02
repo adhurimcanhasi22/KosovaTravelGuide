@@ -8,11 +8,21 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // CORS middleware — must come before routes
+const allowedOrigins = [
+  'https://kosovatravelguide.netlify.app',
+  'https://kosovatravelguide.vercel.app',
+];
+
 app.use(
   cors({
-    origin: 'https://kosovatravelguide.netlify.app', // Frontend domain
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // important for cookies
   })
 );
 
