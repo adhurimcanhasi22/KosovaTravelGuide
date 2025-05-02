@@ -60,7 +60,7 @@ export default function ForgotPassword() {
         `${process.env.NEXT_PUBLIC_API_URL}/user/requestPasswordReset`,
         {
           email: formData.email,
-          redirectUrl: 'https://kosovatravelguide.netlify.app/reset-password/',
+          redirectUrl: 'https://kosovatravelguide.vercel.app/reset-password/',
         },
         {
           withCredentials: true, // <-- important if backend uses cookies
