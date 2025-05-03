@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // CORS middleware — must come before routes
 app.use(
   cors({
-    origin: 'https://kosovatravelguide.vercel.app', // Frontend domain
+    origin: 'https://kosovatravelguide.netlify.app', // Frontend domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
