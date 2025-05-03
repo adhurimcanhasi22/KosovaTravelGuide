@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-import { protect } from '../middleware/authMiddleware';
-
+const { protect } = require('../middleware/authMiddleware');
 //mongodb user model
 const User = require('./../models/User');
 
