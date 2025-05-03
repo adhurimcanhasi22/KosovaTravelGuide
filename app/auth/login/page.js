@@ -74,6 +74,7 @@ export default function Login() {
       );
       if (response.data.status === 'SUCCESS') {
         console.log('Login success, redirecting to dashboard...');
+        router.refresh();
         router.push('/dashboard');
       } else {
         setLoginError(response.data.message);
