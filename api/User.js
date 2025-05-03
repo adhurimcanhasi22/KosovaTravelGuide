@@ -26,6 +26,7 @@ const bcrypt = require('bcrypt');
 
 // path for static verified page
 const path = require('path');
+const { protect } = require('@/middleware/authMiddleware');
 
 // Middleware to parse cookies
 router.use(cookieParser());
@@ -35,7 +36,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { userId: user._id, email: user.email }, // Payload
     process.env.JWT_SECRET, // Secret key
-    { expiresIn: process.env.JWT_EXPIRATION } // Expiration time
+    { expiresIn: '1h' } // Expiration time
   );
 };
 
@@ -365,6 +366,8 @@ router.post('/signin', (req, res) => {
                       id: user._id,
                       email: user.email,
                       name: user.name,
+                      reviews: user.reviews,
+                      bookmarks: user.bookmarks,
                       // Add any other non-sensitive fields the frontend might need
                     },
                   });
@@ -400,6 +403,14 @@ router.post('/signin', (req, res) => {
         });
       });
   }
+});
+
+// Protected Route (Dashboard)
+app.get('/dashboard', protect, (req, res) => {
+  res.status(200).json({
+    message: 'Welcome to the dashboard!',
+    user: req.user,
+  });
 });
 
 // Password reset stuff
