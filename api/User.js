@@ -662,4 +662,80 @@ router.get("/profile", protect, async (req, res) => {
   }
 });
 
+// --- Protected Route to Update User Profile Data ---
+router.put("/profile", protect, async (req, res) => {
+  try {
+    const userId = req.user.userId; // Get userId from authenticated token
+    const { name, email } = req.body; // Get new name/email from request body
+
+    // Basic validation
+    if (
+      (name !== undefined && typeof name !== "string") ||
+      name.trim() === ""
+    ) {
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: "Invalid name provided" });
+    }
+    if (
+      email !== undefined &&
+      (typeof email !== "string" || !/^\S+@\S+\.\S+$/.test(email.trim()))
+    ) {
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: "Invalid email format provided" });
+    }
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name.trim();
+    if (email !== undefined) updateData.email = email.trim().toLowerCase(); // Store emails consistently
+
+    // If email is being updated, check if it already exists for another user
+    if (updateData.email) {
+      const existingUser = await User.findOne({
+        email: updateData.email,
+        _id: { $ne: userId }, // Check for users other than the current one
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          status: "FAILED",
+          message: "Email already in use by another account",
+        });
+      }
+    }
+
+    // Find user by ID and update with new data
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true } // Return the updated doc, run schema validators
+    ).select("-password"); // Exclude password from the returned object
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "User not found during update" });
+    }
+
+    // Optionally: If email was changed, you might want to mark it as unverified again
+    // and trigger the verification email process (more complex setup)
+    // For now, we'll just update it.
+
+    res.json({
+      status: "SUCCESS",
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    // Handle potential validation errors from Mongoose
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ status: "FAILED", message: error.message });
+    }
+    res
+      .status(500)
+      .json({ status: "FAILED", message: "Server error updating profile" });
+  }
+});
+
 module.exports = router;
