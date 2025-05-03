@@ -361,6 +361,7 @@ router.post('/signin', (req, res) => {
                     secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
                     sameSite: 'None', // Required for cross-site cookies if frontend and backend are on different domains
                     maxAge: 3600000, // 1 hour (in milliseconds)
+                    Path: '/', // Cookie path
                   });
 
                   res.json({
