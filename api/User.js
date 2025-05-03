@@ -1,31 +1,31 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 //mongodb user model
-const User = require('./../models/User');
+const User = require("./../models/User");
 
 //mongodb user verification model
-const UserVerification = require('./../models/UserVerification');
+const UserVerification = require("./../models/UserVerification");
 
 //mongodb password reset model
-const PasswordReset = require('./../models/PasswordReset');
+const PasswordReset = require("./../models/PasswordReset");
 
 // email handler
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 // unique string
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 // env variables
-require('dotenv').config();
+require("dotenv").config();
 
 // password handler
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 // path for static verified page
-const path = require('path');
+const path = require("path");
 
 // Middleware to parse cookies
 router.use(cookieParser());
@@ -42,7 +42,7 @@ const generateToken = (user) => {
 // nodemailer stuff
 
 let transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.AUTH_EMAIL,
     pass: process.env.AUTH_PASS,
@@ -55,36 +55,36 @@ transporter.verify((err, success) => {
   if (err) {
     console.log(err);
   } else {
-    console.log('Ready to send emails');
+    console.log("Ready to send emails");
     console.log(success);
   }
 });
 
-router.post('/signup', (req, res) => {
-  const { name = '', email = '', password = '' } = req.body;
+router.post("/signup", (req, res) => {
+  const { name = "", email = "", password = "" } = req.body;
   const trimmedName = name.toString().trim();
   const trimmedEmail = email.toString().trim();
   const trimmedPassword = password.toString().trim();
-  if (trimmedName == '' || trimmedEmail == '' || trimmedPassword == '') {
+  if (trimmedName == "" || trimmedEmail == "" || trimmedPassword == "") {
     return res.json({
-      status: 'FAILED',
-      message: 'Please fill all the fields',
+      status: "FAILED",
+      message: "Please fill all the fields",
     });
   } else if (!/^[a-zA-Z ]*$/.test(name)) {
     res.json({
-      status: 'FAILED',
-      message: 'Invalid name entered',
+      status: "FAILED",
+      message: "Invalid name entered",
     });
   } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
     res.json({
-      status: 'FAILED',
-      message: 'Invalid email entered',
+      status: "FAILED",
+      message: "Invalid email entered",
     });
   } else if (password.length < 8) {
     res.json({
-      status: 'FAILED',
+      status: "FAILED",
       message:
-        'Password must be at least 8 characters long and contain at least one letter and one number',
+        "Password must be at least 8 characters long and contain at least one letter and one number",
     });
   } else {
     //Checking if the user already exists
@@ -94,8 +94,8 @@ router.post('/signup', (req, res) => {
         if (result.length) {
           // A user already exists
           res.json({
-            status: 'FAILED',
-            message: 'User with the provided email already exists',
+            status: "FAILED",
+            message: "User with the provided email already exists",
           });
         } else {
           // Try to create a new user
@@ -121,15 +121,15 @@ router.post('/signup', (req, res) => {
                 .catch((err) => {
                   console.log(err);
                   res.json({
-                    status: 'FAILED',
-                    message: 'An error occurred while creating the user',
+                    status: "FAILED",
+                    message: "An error occurred while creating the user",
                   });
                 });
             })
             .catch((err) => {
               res.json({
-                status: 'FAILED',
-                message: 'An error occurred while hashing the password',
+                status: "FAILED",
+                message: "An error occurred while hashing the password",
               });
             });
         }
@@ -137,8 +137,8 @@ router.post('/signup', (req, res) => {
       .catch((err) => {
         console.log(err);
         res.json({
-          status: 'FAILED',
-          message: 'An error occurred while checking for existing user',
+          status: "FAILED",
+          message: "An error occurred while checking for existing user",
         });
       });
   }
@@ -147,7 +147,7 @@ router.post('/signup', (req, res) => {
 // send verificarion email
 const sendVerificationEmail = ({ _id, email }, res) => {
   // url to be used for verification
-  const currentUrl = 'https://kosovatravelguide.onrender.com/';
+  const currentUrl = "https://kosovatravelguide.onrender.com/";
 
   const uniqueString = uuidv4() + _id;
 
@@ -155,7 +155,7 @@ const sendVerificationEmail = ({ _id, email }, res) => {
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
     to: email,
-    subject: 'Verify your email',
+    subject: "Verify your email",
     html: `<p>Verify your email address...</p>
            <a href="${currentUrl}user/verify/${_id}/${uniqueString}">Verify Email</a>`,
   };
@@ -181,36 +181,36 @@ const sendVerificationEmail = ({ _id, email }, res) => {
             .then(() => {
               // email sent and verification data saved
               res.json({
-                status: 'PENDING',
+                status: "PENDING",
                 message:
-                  'Verification email sent successfully. Please check your inbox.',
+                  "Verification email sent successfully. Please check your inbox.",
               });
             })
             .catch((err) => {
               console.log(err);
               res.json({
-                status: 'FAILED',
-                message: 'An error occurred while sending the email.',
+                status: "FAILED",
+                message: "An error occurred while sending the email.",
               });
             });
         })
         .catch((err) => {
           console.log(err);
           res.json({
-            status: 'FAILED',
-            message: 'An error occurred while saving the verification data.',
+            status: "FAILED",
+            message: "An error occurred while saving the verification data.",
           });
         });
     })
     .catch(() => {
       res.json({
-        status: 'FAILED',
-        message: 'An error occurred while hashing the unique string.',
+        status: "FAILED",
+        message: "An error occurred while hashing the unique string.",
       });
     });
 };
 // verify email
-router.get('/verify/:userId/:uniqueString', (req, res) => {
+router.get("/verify/:userId/:uniqueString", (req, res) => {
   let { userId, uniqueString } = req.params;
 
   UserVerification.find({ userId: req.params.userId })
@@ -230,14 +230,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
               User.deleteOne({ _id: userId })
                 .then(() => {
                   let message =
-                    'Link has expired. Please sign up again to create a new account.';
+                    "Link has expired. Please sign up again to create a new account.";
                   res.redirect(
                     `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                   );
                 })
                 .catch((error) => {
                   let message =
-                    'Clearing user with expired unique string failed';
+                    "Clearing user with expired unique string failed";
                   res.redirect(
                     `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                   );
@@ -246,7 +246,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
             .catch((error) => {
               console.log(error);
               let message =
-                'An error occurred while clearing expired user verification record.';
+                "An error occurred while clearing expired user verification record.";
               res.redirect(
                 `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
               );
@@ -272,7 +272,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                       .catch((error) => {
                         console.log(error);
                         let message =
-                          'An error occurred while finalizing successful verification.';
+                          "An error occurred while finalizing successful verification.";
                         res.redirect(
                           `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                         );
@@ -281,7 +281,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
                   .catch((error) => {
                     console.log(error);
                     let message =
-                      'An error occurred while updating user record.';
+                      "An error occurred while updating user record.";
                     res.redirect(
                       `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                     );
@@ -289,14 +289,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
               } else {
                 // exisitng record but incorrect verification details passed
                 let message =
-                  'Invalid verification details passed. Check your inbox.';
+                  "Invalid verification details passed. Check your inbox.";
                 res.redirect(
                   `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
                 );
               }
             })
             .catch((error) => {
-              let message = 'An error occurred while comparing unique strings.';
+              let message = "An error occurred while comparing unique strings.";
               res.redirect(
                 `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
               );
@@ -305,7 +305,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
       } else {
         // user verification doesn't exist
         let message =
-          'Account record doesn/t exist or has been verified already. Please log in. ';
+          "Account record doesn/t exist or has been verified already. Please log in. ";
         res.redirect(
           `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
         );
@@ -314,7 +314,7 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
     .catch((error) => {
       console.log(error);
       let message =
-        'An error occurred while checking for exisiting user verification record';
+        "An error occurred while checking for exisiting user verification record";
       res.redirect(
         `https://kosovatravelguide.netlify.app/verified-error?message=${message}`
       );
@@ -322,14 +322,14 @@ router.get('/verify/:userId/:uniqueString', (req, res) => {
 });
 
 // Signin
-router.post('/signin', (req, res) => {
+router.post("/signin", (req, res) => {
   let { email, password } = req.body;
   email = email.trim();
   password = password.trim();
-  if (email == '' || password == '') {
+  if (email == "" || password == "") {
     res.json({
-      status: 'FAILED',
-      message: 'Please fill all the fields',
+      status: "FAILED",
+      message: "Please fill all the fields",
     });
   } else {
     //Check if the user exists
@@ -341,9 +341,9 @@ router.post('/signin', (req, res) => {
           // check if user is verified
           if (!data[0].verified) {
             res.json({
-              status: 'FAILED',
+              status: "FAILED",
               message:
-                'Please verify your email address to sign in to your account.',
+                "Please verify your email address to sign in to your account.",
             });
           } else {
             const hashedPassword = data[0].password;
@@ -357,8 +357,8 @@ router.post('/signin', (req, res) => {
 
                   // Send the token in the response body
                   res.json({
-                    status: 'SUCCESS',
-                    message: 'User signed in successfully',
+                    status: "SUCCESS",
+                    message: "User signed in successfully",
                     token: token, // Add the token here
                     data: {
                       // Send back necessary user data (excluding password)
@@ -371,39 +371,39 @@ router.post('/signin', (req, res) => {
                 } else {
                   //Password not matched
                   res.json({
-                    status: 'FAILED',
-                    message: 'Invalid password entered',
+                    status: "FAILED",
+                    message: "Invalid password entered",
                   });
                 }
               })
               .catch((err) => {
                 console.log(err);
                 res.json({
-                  status: 'FAILED',
-                  message: 'An error occurred while comparing passwords',
+                  status: "FAILED",
+                  message: "An error occurred while comparing passwords",
                 });
               });
           }
         } else {
           //User not found
           res.json({
-            status: 'FAILED',
-            message: 'User not found',
+            status: "FAILED",
+            message: "User not found",
           });
         }
       })
       .catch((err) => {
         console.log(err);
         res.json({
-          status: 'FAILED',
-          message: 'An error occurred while checking for existing user',
+          status: "FAILED",
+          message: "An error occurred while checking for existing user",
         });
       });
   }
 });
 
 // Password reset stuff
-router.post('/requestPasswordReset', (req, res) => {
+router.post("/requestPasswordReset", (req, res) => {
   const { email, redirectUrl } = req.body;
 
   User.find({ email })
@@ -415,8 +415,8 @@ router.post('/requestPasswordReset', (req, res) => {
 
         if (!data[0].verified) {
           res.json({
-            status: 'FAILED',
-            message: 'Email has not been verified yet. Check your inbox.',
+            status: "FAILED",
+            message: "Email has not been verified yet. Check your inbox.",
           });
         } else {
           // proceed with email to reset password
@@ -425,16 +425,16 @@ router.post('/requestPasswordReset', (req, res) => {
         }
       } else {
         res.json({
-          status: 'FAILED',
-          message: 'No account found with the provided email address',
+          status: "FAILED",
+          message: "No account found with the provided email address",
         });
       }
     })
     .catch((err) => {
       console.log(err);
       res.json({
-        status: 'FAILED',
-        message: 'An error occurred while checking for existing user',
+        status: "FAILED",
+        message: "An error occurred while checking for existing user",
       });
     });
 });
@@ -453,10 +453,10 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
       const mailOptions = {
         from: process.env.AUTH_EMAIL,
         to: email,
-        subject: 'Password Reset',
+        subject: "Password Reset",
         html: `<p>We heard that you forgot your password.</p> <p>Don't worry, use the link below to reset it.</p><p>This link <b>expires in 60 minutes.</b></p>
         <p>Press <a href=${
-          redirectUrl + '/' + _id + '/' + resetString
+          redirectUrl + "/" + _id + "/" + resetString
         }> here<a/> to proceed.</p>`,
       };
       // hash the reset string
@@ -480,32 +480,32 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
                 .then(() => {
                   // reset email sent and password reset record saved
                   res.json({
-                    status: 'PENDING',
+                    status: "PENDING",
                     message:
-                      'Password reset email sent successfully. Please check your inbox.',
+                      "Password reset email sent successfully. Please check your inbox.",
                   });
                 })
                 .catch((err) => {
                   console.log(err);
                   res.json({
-                    status: 'FAILED',
-                    message: 'Password reset email failed.',
+                    status: "FAILED",
+                    message: "Password reset email failed.",
                   });
                 });
             })
             .catch((err) => {
               console.log(err);
               res.json({
-                status: 'FAILED',
-                message: 'Could not save password reset data!',
+                status: "FAILED",
+                message: "Could not save password reset data!",
               });
             });
         })
         .catch((err) => {
           console.log(err);
           res.json({
-            status: 'FAILED',
-            message: 'An error occurred while hashing the reset string.',
+            status: "FAILED",
+            message: "An error occurred while hashing the reset string.",
           });
         });
     })
@@ -513,14 +513,14 @@ const sendResetEmail = ({ _id, email }, redirectUrl, res) => {
       // error while clearing existing records
       console.log(err);
       res.json({
-        status: 'FAILED',
-        message: 'Clearing existing password reset records failed.',
+        status: "FAILED",
+        message: "Clearing existing password reset records failed.",
       });
     });
 };
 
 // Actually reset the password
-router.post('/resetPassword', (req, res) => {
+router.post("/resetPassword", (req, res) => {
   let { userId, resetString, newPassword } = req.body;
 
   PasswordReset.find({ userId })
@@ -537,16 +537,16 @@ router.post('/resetPassword', (req, res) => {
             .then(() => {
               // Reset record deleted successfully
               res.json({
-                status: 'FAILED',
-                message: 'Password reset link has expired.',
+                status: "FAILED",
+                message: "Password reset link has expired.",
               });
             })
             .catch((err) => {
               // deletion failed
               console.log(err);
               res.json({
-                status: 'FAILED',
-                message: 'Checking for existing password reset record failed.',
+                status: "FAILED",
+                message: "Checking for existing password reset record failed.",
               });
             });
         } else {
@@ -576,62 +576,90 @@ router.post('/resetPassword', (req, res) => {
                           .then(() => {
                             // both user record and password reset record updated
                             res.json({
-                              status: 'SUCCESS',
-                              message: 'Password reset successfully.',
+                              status: "SUCCESS",
+                              message: "Password reset successfully.",
                             });
                           })
                           .catch((err) => {
                             res.json({
-                              status: 'FAILED',
+                              status: "FAILED",
                               message:
-                                'An error occurred while finalizing password reset.',
+                                "An error occurred while finalizing password reset.",
                             });
                           });
                       })
                       .catch((err) => {
                         res.json({
-                          status: 'FAILED',
-                          message: 'Updating user password failed.',
+                          status: "FAILED",
+                          message: "Updating user password failed.",
                         });
                       });
                   })
                   .catch((err) => {
                     res.json({
-                      status: 'FAILED',
+                      status: "FAILED",
                       message:
-                        'An error occurred while hashing the new password.',
+                        "An error occurred while hashing the new password.",
                     });
                   });
               } else {
                 res.json({
-                  status: 'FAILED',
-                  message: 'Invalid password reset details passed.',
+                  status: "FAILED",
+                  message: "Invalid password reset details passed.",
                 });
               }
             })
             .catch((err) => {
               console.log(err);
               res.json({
-                status: 'FAILED',
-                message: 'Comparing reset strings failed.',
+                status: "FAILED",
+                message: "Comparing reset strings failed.",
               });
             });
         }
       } else {
         // Password reset record doesn't exist
         res.json({
-          status: 'FAILED',
-          message: 'No password reset record found',
+          status: "FAILED",
+          message: "No password reset record found",
         });
       }
     })
     .catch((err) => {
       console.log(err);
       res.json({
-        status: 'FAILED',
-        message: 'Checking for existing password reset record failed.',
+        status: "FAILED",
+        message: "Checking for existing password reset record failed.",
       });
     });
+});
+
+// --- Protected Route to Get User Profile Data ---
+router.get("/profile", protect, async (req, res) => {
+  try {
+    // req.user is attached by the 'protect' middleware and contains the token payload { userId, email }
+    const userId = req.user.userId;
+
+    // Find the user by ID and select fields (exclude password)
+    // Populate reviews and bookmarks - adjust 'ref' names ('Place', 'Review') if different in your models
+    const user = await User.findById(userId).select("-password"); // Exclude password field
+    // Remove populate for now if Review/Place models don't exist or cause issues
+    // .populate('reviews') // Populate the reviews array
+    // .populate('bookmarks'); // Populate the bookmarks array
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "User not found" });
+    }
+
+    res.json({ status: "SUCCESS", data: user });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res
+      .status(500)
+      .json({ status: "FAILED", message: "Server error fetching profile" });
+  }
 });
 
 module.exports = router;
