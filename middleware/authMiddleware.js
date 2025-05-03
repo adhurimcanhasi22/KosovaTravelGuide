@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config(); // Ensure environment variables are loaded
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Ensure environment variables are loaded
 
 const protect = (req, res, next) => {
   let token;
@@ -7,11 +7,11 @@ const protect = (req, res, next) => {
   // Check for Authorization header and if it starts with 'Bearer'
   if (
     req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
+    req.headers.authorization.startsWith('Bearer')
   ) {
     try {
       // Get token from header (split 'Bearer <token>' and take the token part)
-      token = req.headers.authorization.split(" ")[1];
+      token = req.headers.authorization.split(' ')[1];
 
       // Verify token using the secret
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -22,10 +22,10 @@ const protect = (req, res, next) => {
 
       next(); // Proceed to the next middleware/route handler
     } catch (error) {
-      console.error("Token verification failed:", error.message);
+      console.error('Token verification failed:', error.message);
       res
         .status(401)
-        .json({ status: "FAILED", message: "Not authorized, token failed" });
+        .json({ status: 'FAILED', message: 'Not authorized, token failed' });
     }
   }
 
@@ -33,7 +33,7 @@ const protect = (req, res, next) => {
   if (!token) {
     res
       .status(401)
-      .json({ status: "FAILED", message: "Not authorized, no token" });
+      .json({ status: 'FAILED', message: 'Not authorized, no token' });
   }
 };
 
