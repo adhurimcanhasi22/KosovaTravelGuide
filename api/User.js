@@ -645,6 +645,34 @@ router.post('/resetPassword', (req, res) => {
     });
 });
 
+// --- Protected Route to Get User Profile Data ---
+router.get('/profile', protect, async (req, res) => {
+  try {
+    // req.user is attached by the 'protect' middleware and contains the token payload { userId, email }
+    const userId = req.user.userId;
+
+    // Find the user by ID and select fields (exclude password)
+    // Populate reviews and bookmarks - adjust 'ref' names ('Place', 'Review') if different in your models
+    const user = await User.findById(userId).select('-password'); // Exclude password field
+    // Remove populate for now if Review/Place models don't exist or cause issues
+    // .populate('reviews') // Populate the reviews array
+    // .populate('bookmarks'); // Populate the bookmarks array
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'User not found' });
+    }
+
+    res.json({ status: 'SUCCESS', data: user });
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error fetching profile' });
+  }
+});
+
 // --- Protected Route to Update User Profile Data ---
 router.put('/profile', protect, async (req, res) => {
   try {
