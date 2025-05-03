@@ -67,17 +67,17 @@ export default function Login() {
         {
           email: formData.email,
           password: formData.password,
-        },
-        {
-          withCredentials: true, // Important if backend sets cookies
         }
       );
-      if (response.data.status === 'SUCCESS') {
-        console.log('Login success, redirecting to dashboard...');
-        router.refresh();
+
+      if (response.data.status === 'SUCCESS' && response.data.token) {
+        console.log('Login success, storing token and redirecting...');
+        localStorage.setItem('token', response.data.token);
         router.push('/dashboard');
       } else {
-        setLoginError(response.data.message);
+        setLoginError(
+          response.data.message || 'Login failed: No token received.'
+        );
       }
     } catch (error) {
       setLoginError(
