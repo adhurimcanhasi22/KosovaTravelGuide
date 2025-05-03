@@ -26,7 +26,6 @@ const bcrypt = require('bcrypt');
 
 // path for static verified page
 const path = require('path');
-const { NONAME } = require('dns');
 
 // Middleware to parse cookies
 router.use(cookieParser());
@@ -352,21 +351,22 @@ router.post('/signin', (req, res) => {
               .compare(password, hashedPassword)
               .then((result) => {
                 if (result) {
-                  //Password matched, generate JWT
-                  const token = generateToken(User);
+                  // Password matched, generate JWT
+                  const user = data[0]; // Get the user object
+                  const token = generateToken(user);
 
-                  //Send the JWT as an HTTP-only cookie
+                  // Send the JWT as an HTTP-only cookie
                   res.cookie('token', token, {
                     httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-                    secure: true,
-                    sameSite: 'None', // Only send over HTTPS in production
+                    secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+                    sameSite: 'None', // Required for cross-site cookies if frontend and backend are on different domains
                     maxAge: 3600000, // 1 hour (in milliseconds)
                   });
 
                   res.json({
                     status: 'SUCCESS',
                     message: 'User signed in successfully',
-                    data: data,
+                    data: user, // Send back user data without the password
                   });
                 } else {
                   //Password not matched
@@ -408,7 +408,7 @@ router.post('/logout', (req, res) => {
   res.clearCookie('token'); // Ensure the cookie name matches what you used in the login route
 
   // Respond with success message
-  res.json({ status: 'SUCCESS', message: 'Logged out successfully' });
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 // Password reset stuff
