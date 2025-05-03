@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      'https://kosovatravelguide.vercel.app', // Frontend
+      'https://kosovatravelguide.netlify.app', // Frontend
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
