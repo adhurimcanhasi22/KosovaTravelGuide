@@ -406,7 +406,7 @@ router.post('/signin', (req, res) => {
 });
 
 // Protected Route (Dashboard)
-app.get('/dashboard', protect, (req, res) => {
+router.get('/dashboard', protect, (req, res) => {
   res.status(200).json({
     message: 'Welcome to the dashboard!',
     user: req.user,
