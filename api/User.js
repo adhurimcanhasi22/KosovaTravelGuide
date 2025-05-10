@@ -405,6 +405,11 @@ router.post('/signin', (req, res) => {
   }
 });
 
+// Logout
+router.post('/logout', (req, res) => {
+  res.status(200).json({ message: 'Logged out successfully' });
+});
+
 // Protected Route (Dashboard)
 router.get('/dashboard', protect, (req, res) => {
   res.status(200).json({
