@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -164,11 +164,11 @@ export default function Dashboard() {
   // --- Main Dashboard Content ---
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+      <div className="mt-[6rem] max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-hidden">
         {/* Header with User Icon and Logout */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 sm:p-6 flex justify-between items-center">
+        <div className="bg-gradient-to-r from-[var(--enterprise-lightblue)] to-[var(--enterprise-skyblue)] p-4 sm:p-6 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white flex items-center justify-center text-blue-600 text-2xl md:text-3xl font-bold">
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white flex items-center justify-center text-[var(--enterprise-blue)] text-2xl md:text-3xl font-bold">
               {getUserInitial(userData.name)}
             </div>
             <div>
@@ -178,12 +178,6 @@ export default function Dashboard() {
               <p className="text-sm text-blue-100">Your personal dashboard</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1 md:px-4 md:py-2 rounded-md text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-          >
-            Log Out
-          </button>
         </div>
 
         {/* User Profile Section - Editable */}
@@ -202,7 +196,7 @@ export default function Dashboard() {
                   setIsEditing(true);
                   setUpdateStatus({ message: '', type: '' }); // Clear status on edit
                 }}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                className="cursor-pointer text-sm text-blue-600 hover:text-blue-800"
               >
                 Edit Profile
               </button>
@@ -276,8 +270,8 @@ export default function Dashboard() {
               <div className="sm:col-span-1 self-end">
                 {' '}
                 {/* Align with role field */}
-                <Link href="/auth/forgot-password">
-                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-yellow-500 text-white hover:bg-yellow-600 transition-colors duration-200 cursor-pointer">
+                <Link href="/auth/change-password">
+                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-[var(--enterprise-yellow)] text-white hover:bg-[var(--enterprise-lightyellow)] transition-colors duration-200 cursor-pointer">
                     Change Password
                   </span>
                 </Link>

@@ -44,9 +44,10 @@
   --enterprise-gray: #323232;
   --enterprise-yellow: #d0a650;
   --enterprise-lightyellow: #f7c979;
-
   --enterprise-lightGray: #f8fafc;
   --enterprise-black: #1e293b;
+  --enterprise-red: #ff4d4f;
+  --enterprise-darkred: #ff1d1f;
   --border-color: #ffffff; /* Explicit border color */
   --background-color: #eceeed;
   --navbar-gradient: #efefef;
