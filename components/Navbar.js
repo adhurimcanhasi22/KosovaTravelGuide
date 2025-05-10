@@ -1,12 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -39,6 +39,21 @@ export default function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+    const handleLoginEvent = () => {
+      const newToken = localStorage.getItem('token');
+      setIsLoggedIn(!!newToken);
+    };
+
+    window.addEventListener('login', handleLoginEvent);
+
+    return () => {
+      window.removeEventListener('login', handleLoginEvent);
+    };
+  }, []);
+
   const handleLogout = async () => {
     try {
       // Send a POST request to the logout endpoint
@@ -47,8 +62,12 @@ export default function Navbar() {
         credentials: 'include', // Ensure cookies are sent with the request
       });
 
-      // Redirect to the login page after logout
-      router.push('/auth/login');
+      // Clear the token from localStorage
+      localStorage.removeItem('token');
+      setIsLoggedIn(false);
+
+      // Redirect to the homepage after logout
+      router.push('/');
     } catch (error) {
       console.error(error);
       alert('Logout failed. Please try again.');
@@ -174,26 +193,35 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Right Section - Buttons */}
+            {/* Right Section - Buttons (Conditional Rendering) */}
             <div className="hidden md:flex items-center gap-4">
-              <>
-                <Link
-                  href="/auth/login"
-                  className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-full bg-red-500 font-semibold text-lg text-white hover:bg-red-600 transition-all duration-300"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
-                >
-                  Login
-                </Link>
+                  >
+                    Login
+                  </Link>
 
-                {/* Sign Up Button */}
-                <Link
-                  href="/auth/signup"
-                  className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                  {/* Sign Up Button */}
+                  <Link
+                    href="/auth/signup"
+                    className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
-                >
-                  Sign Up
-                </Link>
-              </>
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -230,22 +258,33 @@ export default function Navbar() {
                 Tours
               </Link>
               <div className="flex flex-col gap-4 mt-4">
-                <Link
-                  href="/auth/login"
-                  className="px-4 py-2 mx-10 text-center rounded-full bg-white font-semibold text-lg 
+                {isLoggedIn ? (
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 mx-10 text-center rounded-full bg-red-500 font-semibold text-lg text-white hover:bg-red-600 transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="px-4 py-2 mx-10 text-center rounded-full bg-white font-semibold text-lg 
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
-                >
-                  Login
-                </Link>
+                    >
+                      Login
+                    </Link>
 
-                {/* Sign Up Button */}
-                <Link
-                  href="/auth/signup"
-                  className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                    {/* Sign Up Button */}
+                    <Link
+                      href="/auth/signup"
+                      className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
-                >
-                  Sign Up
-                </Link>
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

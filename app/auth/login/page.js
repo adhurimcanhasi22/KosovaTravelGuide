@@ -73,6 +73,7 @@ export default function Login() {
       if (response.data.status === 'SUCCESS' && response.data.token) {
         console.log('Login successful, storing token and redirecting...');
         localStorage.setItem('token', response.data.token);
+        window.dispatchEvent(new Event('login'));
         router.push('/dashboard');
       } else {
         setLoginError(
