@@ -13,6 +13,12 @@ const UserVerification = require('./../models/UserVerification');
 //mongodb password reset model
 const PasswordReset = require('./../models/PasswordReset');
 
+//mongodb City model
+const City = require('../models/City');
+
+//mongodb Accommodation model
+const Accommodation = require('../models/Accommodation');
+
 // email handler
 const nodemailer = require('nodemailer');
 
@@ -34,14 +40,13 @@ router.use(cookieParser());
 // Function to generate JWT
 const generateToken = (user) => {
   return jwt.sign(
-    { userId: user._id, email: user.email }, // Payload
-    process.env.JWT_SECRET, // Secret key
-    { expiresIn: '1h' } // Expiration time
+    { userId: user._id, email: user.email, role: user.role }, // Include role here
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
   );
 };
 
 // nodemailer stuff
-
 let transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -51,7 +56,6 @@ let transporter = nodemailer.createTransport({
 });
 
 // testing success
-
 transporter.verify((err, success) => {
   if (err) {
     console.log(err);
@@ -751,6 +755,150 @@ router.put('/profile', protect, async (req, res) => {
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error updating profile' });
+  }
+});
+
+// --- Protected Route to Get User Bookmarks (Revised to fetch names) ---
+router.get('/bookmarks', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const user = await User.findById(userId).select('bookmarks');
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'User not found' });
+    }
+
+    const populatedBookmarks = await Promise.all(
+      user.bookmarks.map(async (bookmark) => {
+        let item;
+        if (bookmark.bookmarkType === 'city') {
+          item = await City.findById(bookmark.itemId).select('name slug'); // Fetch name and slug
+          return {
+            ...bookmark.toObject(),
+            name: item?.name,
+            slug: item?.slug,
+            route: `/cities/${item?.slug}`,
+          };
+        } else if (bookmark.bookmarkType === 'accommodation') {
+          item = await Accommodation.findOne({ id: bookmark.itemId }).select(
+            'name'
+          ); // Fetch name
+          return {
+            ...bookmark.toObject(),
+            name: item?.name,
+            route: `/accommodations/${bookmark.itemId}`,
+          };
+        }
+        return bookmark.toObject(); // If type is unknown
+      })
+    );
+
+    res.json({ status: 'SUCCESS', data: populatedBookmarks });
+  } catch (error) {
+    console.error('Error fetching user bookmarks:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error fetching bookmarks' });
+  }
+});
+
+// --- Protected Route to Add a Bookmark ---
+router.post('/bookmarks/add', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { bookmarkType, itemId } = req.body;
+
+    if (!bookmarkType || !itemId) {
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Missing bookmarkType or itemId' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'User not found' });
+    }
+
+    // Check if the item exists in the respective collection
+    let itemExists = false;
+    if (bookmarkType === 'city') {
+      itemExists = await City.exists({ _id: itemId }); // Assuming itemId is ObjectId for cities
+    } else if (bookmarkType === 'accommodation') {
+      itemExists = await Accommodation.exists({ id: itemId }); // Assuming itemId is string ID for accommodations
+    } else {
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Invalid bookmarkType' });
+    }
+
+    if (!itemExists) {
+      return res.status(404).json({
+        status: 'FAILED',
+        message: `${bookmarkType} with ID ${itemId} not found`,
+      });
+    }
+
+    // Check if the item is already bookmarked
+    const alreadyBookmarked = user.bookmarks.some(
+      (bookmark) =>
+        bookmark.bookmarkType === bookmarkType &&
+        bookmark.itemId.toString() === itemId
+    );
+
+    if (!alreadyBookmarked) {
+      user.bookmarks.push({ bookmarkType, itemId });
+      await user.save();
+      res.status(200).json({ status: 'SUCCESS', message: 'Bookmark added' });
+    } else {
+      res
+        .status(200)
+        .json({ status: 'SUCCESS', message: 'Item already bookmarked' });
+    }
+  } catch (error) {
+    console.error('Error adding bookmark:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error adding bookmark' });
+  }
+});
+
+// --- Protected Route to Remove a Bookmark ---
+router.delete('/bookmarks/remove', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { bookmarkType, itemId } = req.body;
+
+    if (!bookmarkType || !itemId) {
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Missing bookmarkType or itemId' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'User not found' });
+    }
+
+    user.bookmarks = user.bookmarks.filter(
+      (bookmark) =>
+        !(
+          bookmark.bookmarkType === bookmarkType &&
+          bookmark.itemId.toString() === itemId
+        )
+    );
+
+    await user.save();
+    res.status(200).json({ status: 'SUCCESS', message: 'Bookmark removed' });
+  } catch (error) {
+    console.error('Error removing bookmark:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error removing bookmark' });
   }
 });
 

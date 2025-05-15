@@ -17,19 +17,35 @@ const UserSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'], // Can be 'user' or 'admin'
+    enum: ['user', 'admin'],
     default: 'user',
   },
   bookmarks: [
     {
-      type: Schema.Types.ObjectId, // You can reference the Place model (for example)
-      ref: 'Place', // Assuming you have a Place model
+      bookmarkType: {
+        type: String,
+        enum: ['city', 'accommodation', 'tour'], // Add other types as needed
+        required: true,
+      },
+      itemId: {
+        type: Schema.Types.ObjectId, // Assuming your city/accommodation IDs are ObjectIds
+        required: true,
+      },
+      // Optional: You could store a reference to the actual item if you create models later
+      // item: {
+      //   type: Schema.Types.ObjectId,
+      //   refPath: 'bookmarks.bookmarkType', // Dynamic reference
+      // },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
   reviews: [
     {
-      type: Schema.Types.ObjectId, // You can reference the Review model (for example)
-      ref: 'Review', // Assuming you have a Review model
+      type: Schema.Types.ObjectId,
+      ref: 'Review', // Assuming you'll have a Review model
     },
   ],
   createdAt: {
