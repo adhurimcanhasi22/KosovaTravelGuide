@@ -117,11 +117,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/auth/login');
-  };
-
   // --- Helper function for User Icon ---
   const getUserInitial = (name) => {
     return name ? name.charAt(0).toUpperCase() : '?';
@@ -271,7 +266,7 @@ export default function Dashboard() {
                 {' '}
                 {/* Align with role field */}
                 <Link href="/auth/change-password">
-                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-[var(--enterprise-yellow)] text-white hover:bg-[var(--enterprise-lightyellow)] transition-colors duration-200 cursor-pointer">
+                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)] transition-colors duration-200 cursor-pointer">
                     Change Password
                   </span>
                 </Link>
@@ -352,6 +347,52 @@ export default function Dashboard() {
             </p>
           )}
         </div>
+        {userData.role === 'admin' && (
+          <div className="p-4 md:p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Admin Controls
+            </h2>
+            <p className="text-gray-700 mb-2">Manage website content:</p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/admin/add/accommodation"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-lightblue)] text-white hover:bg-[var(--enterprise-skyblue)]"
+              >
+                Add Accommodation
+              </Link>
+              <Link
+                href="/admin/manage/accommodations"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
+              >
+                Manage Accommodations
+              </Link>
+              <Link
+                href="/admin/add/destination"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-lightblue)] text-white hover:bg-[var(--enterprise-skyblue)]"
+              >
+                Add Destination
+              </Link>
+              <Link
+                href="/admin/manage/destinations"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
+              >
+                Manage Destinations
+              </Link>
+              <Link
+                href="/admin/add/tour"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-lightblue)] text-white hover:bg-[var(--enterprise-skyblue)]"
+              >
+                Add Tour
+              </Link>
+              <Link
+                href="/admin/manage/tours"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
+              >
+                Manage Tours
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -129,7 +129,7 @@ export default function Navbar() {
                 onMouseLeave={handleMouseLeave}
               >
                 <Link href="/destinations" className="flex items-center gap-2">
-                  <span className="navbar-link">Destinations</span>
+                  <span className="navbar-link">Travel</span>
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
@@ -158,7 +158,7 @@ export default function Navbar() {
                         href="/destinations/city1"
                         className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
                       >
-                        City 1
+                        Planner
                       </Link>
                     </li>
                     <li>
@@ -166,7 +166,7 @@ export default function Navbar() {
                         href="/destinations/city2"
                         className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
                       >
-                        City 2
+                        Map
                       </Link>
                     </li>
                     <li>
@@ -174,7 +174,7 @@ export default function Navbar() {
                         href="/destinations/city3"
                         className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
                       >
-                        City 3
+                        FAQ
                       </Link>
                     </li>
                   </ul>
@@ -183,7 +183,7 @@ export default function Navbar() {
               </div>
               {/* Other links */}
               <Link href="/travel-tips" className="navbar-link">
-                Travel Tips
+                Destinations
               </Link>
               <Link href="/accommodations" className="navbar-link">
                 Accommodations
@@ -191,6 +191,11 @@ export default function Navbar() {
               <Link href="/tours" className="navbar-link">
                 Tours
               </Link>
+              {isLoggedIn && (
+                <Link href="/dashboard" className="navbar-link">
+                  Dashboard
+                </Link>
+              )}
             </div>
 
             {/* Right Section - Buttons (Conditional Rendering) */}
