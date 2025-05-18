@@ -58,13 +58,20 @@ router.post('/accommodations', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Get all accommodations
-// @route   GET /api/admin/accommodations
-// @access  Private/Admin
 router.get('/accommodations', protect, admin, async (req, res) => {
+  console.log('Request received for /api/admin/accommodations');
   try {
-    const accommodations = await Accommodation.find();
+    console.log('Attempting to find accommodations...');
+    const query = Accommodation.find();
+    console.log('Mongoose Query:', query.getQuery()); // Log the query object
+    const accommodations = await query.exec();
+    console.log(
+      'Query completed. Number of accommodations found:',
+      accommodations.length
+    );
+    console.log('First accommodation object:', accommodations[0]); // Log the first object
     res.status(200).json({ status: 'SUCCESS', data: accommodations });
+    console.log('Response sent successfully.');
   } catch (error) {
     console.error('Error fetching accommodations:', error);
     res.status(500).json({
@@ -73,7 +80,6 @@ router.get('/accommodations', protect, admin, async (req, res) => {
     });
   }
 });
-
 // @desc    Get a single accommodation by ID
 // @route   GET /api/admin/accommodations/:id
 // @access  Private/Admin
