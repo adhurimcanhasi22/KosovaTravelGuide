@@ -266,7 +266,7 @@ export default function Dashboard() {
                 {' '}
                 {/* Align with role field */}
                 <Link href="/auth/change-password">
-                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)] transition-colors duration-200 cursor-pointer">
+                  <span className="px-4 py-2 rounded-md text-sm font-medium bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)] duration-200 cursor-pointer">
                     Change Password
                   </span>
                 </Link>
@@ -361,7 +361,7 @@ export default function Dashboard() {
                 Add Accommodation
               </Link>
               <Link
-                href="/admin/manage/accommodations"
+                href="/admin/manage/accommodation"
                 className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
               >
                 Manage Accommodations
