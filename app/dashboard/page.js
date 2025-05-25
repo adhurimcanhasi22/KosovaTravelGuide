@@ -385,7 +385,7 @@ export default function Dashboard() {
                 Add Tour
               </Link>
               <Link
-                href="/admin/manage/tours"
+                href="/admin/manage/tour"
                 className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
               >
                 Manage Tours
