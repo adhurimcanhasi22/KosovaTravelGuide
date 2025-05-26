@@ -17,10 +17,10 @@ export default function ContactPage() {
       </Head>
 
       {/* Hero Section Styled Exactly Like Provided Screenshot */}
-      <div className=" mt-[5rem] relative h-[40vh] min-h-[300px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
+      <div className=" mt-[4rem] relative h-[40vh] min-h-[300px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-[var(--enterprise-gray)]">
-            <span className="text-[var(--enterprise-lightblue)]">Contact Us</span>
+            <span className="text-[var(--enterprise-blue)]">Contact Us</span>
           </h1>
           <p className="text-xl text-[var(--enterprise-gray)] mt-4">
             We're here to help you plan your perfect Kosovo experience
@@ -29,14 +29,14 @@ export default function ContactPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white py-4 shadow-md sticky top-0 z-20">
+      <div className="bg-[var(--enterprise-lightGray)] py-4 shadow-md sticky top-0 z-20">
         <div className="container-custom">
           <div className="flex flex-wrap justify-center gap-2">
             {['contact', 'offices', 'faq'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`cursor-pointer px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                   activeTab === tab
                     ? 'bg-[var(--enterprise-lightblue)] text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -44,7 +44,9 @@ export default function ContactPage() {
               >
                 {tab === 'contact' && <i className="fas fa-envelope mr-2"></i>}
                 {tab === 'offices' && <i className="fas fa-building mr-2"></i>}
-                {tab === 'faq' && <i className="fas fa-question-circle mr-2"></i>}
+                {tab === 'faq' && (
+                  <i className="fas fa-question-circle mr-2"></i>
+                )}
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
@@ -62,9 +64,10 @@ export default function ContactPage() {
               </div>
               <div className="lg:col-span-1 bg-white p-6 md:p-8 rounded-lg shadow-sm">
                 <h3 className="text-xl font-bold mb-4">Contact Information</h3>
-                <ul className="space-y-4 text-gray-600">
+                <ul className="space-y-4 text-[var(--enterprise-gray)]">
                   <li>
-                    <strong>Address:</strong> Mother Teresa Boulevard 123, Pristina 10000, Kosovo
+                    <strong>Address:</strong> Mother Teresa Boulevard 123,
+                    Pristina 10000, Kosovo
                   </li>
                   <li>
                     <strong>Email:</strong> info@kosovo-travel.com
@@ -98,7 +101,9 @@ export default function ContactPage() {
                     Mother Teresa Boulevard 123, Pristina 10000, Kosovo
                   </p>
                   <p className="text-gray-600">Phone: +383 44 123 456</p>
-                  <p className="text-gray-600">Email: pristina@kosovo-travel.com</p>
+                  <p className="text-gray-600">
+                    Email: pristina@kosovo-travel.com
+                  </p>
                 </div>
 
                 {/* Office 2 */}
@@ -110,7 +115,9 @@ export default function ContactPage() {
                     Shadervan Square 45, Prizren 20000, Kosovo
                   </p>
                   <p className="text-gray-600">Phone: +383 44 789 012</p>
-                  <p className="text-gray-600">Email: prizren@kosovo-travel.com</p>
+                  <p className="text-gray-600">
+                    Email: prizren@kosovo-travel.com
+                  </p>
                 </div>
 
                 {/* Office 3 */}
@@ -136,26 +143,34 @@ export default function ContactPage() {
 
               {/* FAQ Item */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold">What services do you offer?</h3>
+                <h3 className="text-xl font-bold">
+                  What services do you offer?
+                </h3>
                 <p className="text-gray-600">
-                  Custom itineraries, guided tours, accommodations, transportation, cultural
-                  experiences, travel resources.
+                  Custom itineraries, guided tours, accommodations,
+                  transportation, cultural experiences, travel resources.
                 </p>
               </div>
 
               {/* FAQ Item */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold">How far in advance should I book a tour?</h3>
+                <h3 className="text-xl font-bold">
+                  How far in advance should I book a tour?
+                </h3>
                 <p className="text-gray-600">
-                  Ideally 2-3 weeks in advance; 1-2 months for larger groups or custom tours.
+                  Ideally 2-3 weeks in advance; 1-2 months for larger groups or
+                  custom tours.
                 </p>
               </div>
 
               {/* FAQ Item */}
               <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-xl font-bold">What payment methods do you accept?</h3>
+                <h3 className="text-xl font-bold">
+                  What payment methods do you accept?
+                </h3>
                 <p className="text-gray-600">
-                  Credit/debit cards, bank transfers, PayPal, and cash (in-office bookings).
+                  Credit/debit cards, bank transfers, PayPal, and cash
+                  (in-office bookings).
                 </p>
               </div>
 
