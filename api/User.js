@@ -901,5 +901,54 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
       .json({ status: 'FAILED', message: 'Server error removing bookmark' });
   }
 });
+// --- Contact Form Submission Route ---
+router.post('/contact', async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  // Basic validation
+  if (!name || !email || !message) {
+    return res.status(400).json({
+      status: 'FAILED',
+      message: 'Name, email, and message are required fields.',
+    });
+  }
+
+  // Email format validation
+  if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    return res.status(400).json({
+      status: 'FAILED',
+      message: 'Invalid email format.',
+    });
+  }
+
+  try {
+    const mailOptions = {
+      from: `"${name}" <${email}>`, // Sender's name and email from the form
+      to: process.env.RECIPIENT_EMAIL, // Your email address where you want to receive messages
+      subject: `Contact Form: ${subject || 'No Subject'}`,
+      html: `
+        <p><strong>From:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message}</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Your message has been sent successfully!',
+    });
+  } catch (error) {
+    console.error('Error sending contact email:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Failed to send message. Please try again later.',
+      error: error.message,
+    });
+  }
+});
 
 module.exports = router;
