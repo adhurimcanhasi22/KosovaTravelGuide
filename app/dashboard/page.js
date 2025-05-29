@@ -390,6 +390,18 @@ export default function Dashboard() {
               >
                 Manage Tours
               </Link>
+              <Link
+                href="/admin/add/travel-tips"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-lightblue)] text-white hover:bg-[var(--enterprise-skyblue)]"
+              >
+                Add Travel Tips
+              </Link>
+              <Link
+                href="/admin/manage/travel-tips"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
+              >
+                Manage Travel Tips
+              </Link>
             </div>
           </div>
         )}
