@@ -5,6 +5,7 @@ const { protect, admin } = require('../middleware/authMiddleware'); // Import yo
 const City = require('../models/City'); // Import your City model
 const Accommodation = require('../models/Accommodation'); // Import your Accommodation model
 const Tour = require('../models/Tour'); // Import your Tour model (create this if you haven't)
+const TravelTip = require('../models/TravelTip'); // NEW: Import your TravelTip model
 
 // --- Accommodation Routes (Admin Only) ---
 
@@ -381,28 +382,49 @@ router.delete('/destinations/:slug', protect, admin, async (req, res) => {
   }
 });
 
-// --- Tour Routes (Admin Only) ---
 // @desc    Create a new tour
 // @route   POST /api/admin/tours
 // @access  Private/Admin
 router.post('/tours', protect, admin, async (req, res) => {
   try {
-    const { name, description, price, date, location, images } = req.body;
-
-    // Basic input validation
-    if (!name || !description || !price || !date || !location) {
-      return res
-        .status(400)
-        .json({ status: 'FAILED', message: 'Missing required fields' });
-    }
-
-    const newTour = new Tour({
+    const {
       name,
       description,
       price,
       date,
       location,
       images,
+      id,
+      duration,
+      groupSize,
+    } = req.body;
+
+    // Basic input validation - now including date
+    if (
+      !id ||
+      !name ||
+      !description ||
+      !price ||
+      !date ||
+      !location ||
+      !duration ||
+      !groupSize
+    ) {
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Missing required fields' });
+    }
+
+    const newTour = new Tour({
+      id,
+      name,
+      description,
+      price,
+      date,
+      location,
+      images,
+      duration,
+      groupSize,
     });
 
     const createdTour = await newTour.save();
@@ -413,12 +435,19 @@ router.post('/tours', protect, admin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating tour:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    } else if (error.code === 11000) {
+      // MongoDB duplicate key error for 'id'
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Tour ID already exists.' });
+    }
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error creating tour' });
   }
 });
-
 // @desc    Get all tours
 // @route   GET /api/admin/tours
 // @access  Private/Admin
@@ -434,12 +463,12 @@ router.get('/tours', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Get a single tour by ID
+// @desc    Get a single tour by your custom ID
 // @route   GET /api/admin/tours/:id
 // @access  Private/Admin
 router.get('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await Tour.findOne({ id: req.params.id }); // Use findOne with a query object
     if (!tour) {
       return res
         .status(404)
@@ -454,22 +483,24 @@ router.get('/tours/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Update a tour by ID
+// @desc    Update a tour by your custom ID
 // @route   PUT /api/admin/tours/:id
 // @access  Private/Admin
 router.put('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const { name, description, price, date, location, images } = req.body;
-    // Basic input validation
-    if (!name && !description && !price && !date && !location && !images) {
-      return res.status(400).json({
-        status: 'FAILED',
-        message: 'At least one field to update is required',
-      });
-    }
+    const {
+      name,
+      description,
+      price,
+      date,
+      location,
+      images,
+      duration,
+      groupSize,
+    } = req.body; // Include all relevant fields
 
-    const updatedTour = await Tour.findByIdAndUpdate(
-      req.params.id,
+    const updatedTour = await Tour.findOneAndUpdate(
+      { id: req.params.id }, // Query by your custom ID
       {
         name,
         description,
@@ -477,6 +508,8 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
         date,
         location,
         images,
+        duration,
+        groupSize,
       },
       { new: true, runValidators: true }
     );
@@ -503,12 +536,12 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Delete a tour by ID
+// @desc    Delete a tour by your custom ID
 // @route   DELETE /api/admin/tours/:id
 // @access  Private/Admin
 router.delete('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+    const deletedTour = await Tour.findOneAndDelete({ id: req.params.id }); // Query by your custom ID
 
     if (!deletedTour) {
       return res
@@ -524,6 +557,171 @@ router.delete('/tours/:id', protect, admin, async (req, res) => {
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error deleting tour' });
+  }
+});
+
+// --- Travel Tip Routes (Admin Only) ---
+// @desc    Create a new travel tip
+// @route   POST /api/admin/traveltips
+// @access  Private/Admin
+router.post('/traveltips', protect, admin, async (req, res) => {
+  try {
+    const { id, title, icon, content, list } = req.body;
+
+    // Basic input validation
+    if (!id || !title || !icon || !content) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'Missing required fields: id, title, icon, content',
+      });
+    }
+
+    // Check if travel tip with this ID already exists
+    const travelTipExists = await TravelTip.findOne({ id });
+    if (travelTipExists) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'Travel tip with this ID already exists.',
+      });
+    }
+
+    const newTravelTip = new TravelTip({
+      id,
+      title,
+      icon,
+      content,
+      list: list || [], // Ensure list is an array, default to empty if not provided
+    });
+
+    const createdTravelTip = await newTravelTip.save();
+    res.status(201).json({
+      status: 'SUCCESS',
+      message: 'Travel tip created successfully',
+      data: createdTravelTip,
+    });
+  } catch (error) {
+    console.error('Error creating travel tip:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    } else if (error.code === 11000) {
+      // MongoDB duplicate key error for 'id'
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Travel tip ID already exists.' });
+    }
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error creating travel tip' });
+  }
+});
+
+// @desc    Get all travel tips
+// @route   GET /api/admin/traveltips
+// @access  Private/Admin
+router.get('/traveltips', protect, admin, async (req, res) => {
+  try {
+    const travelTips = await TravelTip.find();
+    res.status(200).json({ status: 'SUCCESS', data: travelTips });
+  } catch (error) {
+    console.error('Error fetching travel tips:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error fetching travel tips' });
+  }
+});
+
+// @desc    Get a single travel tip by ID
+// @route   GET /api/admin/traveltips/:id
+// @access  Private/Admin
+router.get('/traveltips/:id', protect, admin, async (req, res) => {
+  try {
+    const travelTip = await TravelTip.findOne({ id: req.params.id }); // Find by the string 'id'
+    if (!travelTip) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Travel tip not found' });
+    }
+    res.status(200).json({ status: 'SUCCESS', data: travelTip });
+  } catch (error) {
+    console.error('Error fetching travel tip:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error fetching travel tip' });
+  }
+});
+
+// @desc    Update a travel tip by ID
+// @route   PUT /api/admin/traveltips/:id
+// @access  Private/Admin
+router.put('/traveltips/:id', protect, admin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, icon, content, list } = req.body;
+
+    // Basic input validation - at least one field to update
+    if (!title && !icon && !content && !list) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'At least one field to update is required',
+      });
+    }
+
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (icon !== undefined) updateData.icon = icon;
+    if (content !== undefined) updateData.content = content;
+    if (list !== undefined) updateData.list = list; // Expecting list to be an array
+
+    const updatedTravelTip = await TravelTip.findOneAndUpdate(
+      { id },
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedTravelTip) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Travel tip not found' });
+    }
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Travel tip updated successfully',
+      data: updatedTravelTip,
+    });
+  } catch (error) {
+    console.error('Error updating travel tip:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    }
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error updating travel tip' });
+  }
+});
+
+// @desc    Delete a travel tip by ID
+// @route   DELETE /api/admin/traveltips/:id
+// @access  Private/Admin
+router.delete('/traveltips/:id', protect, admin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedTravelTip = await TravelTip.findOneAndDelete({ id });
+
+    if (!deletedTravelTip) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Travel tip not found' });
+    }
+
+    res
+      .status(200)
+      .json({ status: 'SUCCESS', message: 'Travel tip deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting travel tip:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error deleting travel tip' });
   }
 });
 
