@@ -3,7 +3,8 @@ require('./config/db');
 const express = require('express');
 const cors = require('cors');
 const UserRouter = require('./api/User');
-const AdminRouter = require('./api/admin'); // Import the admin router
+const AdminRouter = require('./api/admin');
+const publicRoutes = require('./api/public'); // Adjust path if needed
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,6 +25,8 @@ app.use('/user', UserRouter);
 
 // Mount the admin router at /admin
 app.use('/admin', AdminRouter); // Use the AdminRouter here
+
+app.use('/public', publicRoutes); // Mount the public routes
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

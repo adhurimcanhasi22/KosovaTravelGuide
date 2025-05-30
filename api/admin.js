@@ -7,15 +7,22 @@ const Accommodation = require('../models/Accommodation'); // Import your Accommo
 const Tour = require('../models/Tour'); // Import your Tour model (create this if you haven't)
 const TravelTip = require('../models/TravelTip'); // NEW: Import your TravelTip model
 
-// --- Accommodation Routes (Admin Only) ---
-
 // @desc    Create a new accommodation
 // @route   POST /api/admin/accommodations
 // @access  Private/Admin
 router.post('/accommodations', protect, admin, async (req, res) => {
   try {
-    const { id, name, image, location, type, price, rating, features } =
-      req.body;
+    const {
+      id,
+      name,
+      image,
+      location,
+      type,
+      price,
+      rating,
+      features,
+      bookingUrl,
+    } = req.body; // Added bookingUrl
 
     // Basic input validation
     if (!id || !name || !location || !type || !price) {
@@ -36,12 +43,13 @@ router.post('/accommodations', protect, admin, async (req, res) => {
     const newAccommodation = new Accommodation({
       id, // Use the provided ID
       name,
+      image,
       location,
       type,
       price,
       rating,
-      image,
       features,
+      bookingUrl, // Save the new field
     });
 
     const createdAccommodation = await newAccommodation.save();
@@ -59,20 +67,13 @@ router.post('/accommodations', protect, admin, async (req, res) => {
   }
 });
 
+// @desc    Get all accommodations
+// @route   GET /api/admin/accommodations
+// @access  Private/Admin
 router.get('/accommodations', protect, admin, async (req, res) => {
-  console.log('Request received for /api/admin/accommodations');
   try {
-    console.log('Attempting to find accommodations...');
-    const query = Accommodation.find();
-    console.log('Mongoose Query:', query.getQuery()); // Log the query object
-    const accommodations = await query.exec();
-    console.log(
-      'Query completed. Number of accommodations found:',
-      accommodations.length
-    );
-    console.log('First accommodation object:', accommodations[0]); // Log the first object
+    const accommodations = await Accommodation.find();
     res.status(200).json({ status: 'SUCCESS', data: accommodations });
-    console.log('Response sent successfully.');
   } catch (error) {
     console.error('Error fetching accommodations:', error);
     res.status(500).json({
@@ -81,6 +82,7 @@ router.get('/accommodations', protect, admin, async (req, res) => {
     });
   }
 });
+
 // @desc    Get a single accommodation by ID
 // @route   GET /api/admin/accommodations/:id
 // @access  Private/Admin
@@ -108,7 +110,8 @@ router.get('/accommodations/:id', protect, admin, async (req, res) => {
 router.put('/accommodations/:id', protect, admin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, image, location, type, price, rating, features } = req.body;
+    const { name, image, location, type, price, rating, features, bookingUrl } =
+      req.body; // Added bookingUrl
 
     // Basic input validation
     if (
@@ -118,8 +121,10 @@ router.put('/accommodations/:id', protect, admin, async (req, res) => {
       !type &&
       !price &&
       !rating &&
-      !features
+      !features &&
+      !bookingUrl
     ) {
+      // Added bookingUrl
       return res.status(400).json({
         status: 'FAILED',
         message: 'At least one field to update is required',
@@ -136,6 +141,7 @@ router.put('/accommodations/:id', protect, admin, async (req, res) => {
         price,
         rating,
         features,
+        bookingUrl, // Update the new field
       },
       { new: true, runValidators: true }
     ); // Return the updated document, run validators
@@ -153,6 +159,9 @@ router.put('/accommodations/:id', protect, admin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating accommodation:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    }
     res.status(500).json({
       status: 'FAILED',
       message: 'Server error updating accommodation',
