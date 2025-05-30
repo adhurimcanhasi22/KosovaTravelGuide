@@ -218,8 +218,8 @@ const ManageTravelTipsPage = () => {
             Manage Travel Tips
           </h1>
           <Link
-            href="/admin/add/travel-tips" // Changed link
-            className="inline-flex items-center text-white bg-blue-500 hover:bg-blue-600 py-2 px-4 rounded-md shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 transition-colors duration-200"
+            href="/admin/add/travel-tip"
+            className="inline-flex items-center text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] py-2 px-4 rounded-md shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--enterprise-blue)] transition-colors duration-200"
           >
             <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>

@@ -1,62 +1,44 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import React, { useState } from 'react';
+import { Plus, Hotel, AlertCircle, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input'; // Assuming these are correctly imported from shadcn/ui
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Plus, Hotel, AlertCircle, CheckCircle } from 'lucide-react';
-import { jwtDecode } from 'jwt-decode';
-import { useRouter } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+
+// Define accommodation types for the select dropdown
+const accommodationTypes = [
+  'Hotel',
+  'Motel',
+  'Resort',
+  'Guesthouse',
+  'Apartment',
+  'Hostel',
+  'Other',
+];
 
 const AddAccommodationPage = () => {
-  const [userRole, setUserRole] = useState('');
-  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formData, setFormData] = useState({
     id: '',
     name: '',
-    image: '',
     location: '',
-    type: '', // Changed to string
+    type: '',
     price: '',
     rating: '',
+    image: '',
     features: '',
+    bookingUrl: '', // New field for booking URL
   });
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        setUserRole(decodedToken.role);
-        if (decodedToken.role !== 'admin') {
-          // Redirect non-admins
-          router.push('/dashboard');
-        }
-      } catch (error) {
-        console.error('Error decoding token:', error);
-        setUserRole('');
-        router.push('/auth/login');
-      }
-    } else {
-      setUserRole('');
-      router.push('/auth/login');
-    }
-  }, [router]);
-
-  if (userRole !== 'admin') {
-    return (
-      <div className="min-h-screen bg-gray-100 py-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-[var(--enterprise-blue)] mb-6">
-            You do not have permission to access this page.
-          </h1>
-        </div>
-      </div>
-    );
-  }
 
   // Function to handle form input changes
   const handleInputChange = (e) => {
@@ -78,18 +60,9 @@ const AddAccommodationPage = () => {
         throw new Error('Authentication token is missing. Please log in.');
       }
 
-      // Construct the full URL using NEXT_PUBLIC_API_URL
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error(
-          'NEXT_PUBLIC_API_URL is not defined in your environment.'
-        );
-      }
-      const fullUrl = `${apiUrl}/admin/accommodations`;
-
       // Send the data to your backend API endpoint
-      const response = await fetch(fullUrl, {
-        // Corrected route
+      const response = await fetch('/api/admin/accommodations', {
+        // Corrected route to include /api
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,15 +71,16 @@ const AddAccommodationPage = () => {
         body: JSON.stringify({
           id: formData.id,
           name: formData.name,
-          image: formData.image,
           location: formData.location,
-          type: formData.type, // Use the string value from input
+          type: formData.type,
           price: Number(formData.price), // Ensure price is a number
           rating: formData.rating ? Number(formData.rating) : undefined, // Ensure rating is a number or undefined
+          image: formData.image,
           features: formData.features
             .split(',')
             .map((item) => item.trim())
             .filter((item) => item), // Convert features to array
+          bookingUrl: formData.bookingUrl, // Include the new field
         }),
       });
 
@@ -115,13 +89,7 @@ const AddAccommodationPage = () => {
 
       if (!response.ok) {
         // Handle HTTP errors (e.g., 400, 500)
-        let errorMessage = 'Failed to add accommodation';
-        if (responseData && responseData.message) {
-          errorMessage = responseData.message;
-        } else if (typeof responseData === 'string') {
-          errorMessage = responseData; // Handle string responses
-        }
-        throw new Error(errorMessage);
+        throw new Error(responseData.message || 'Failed to add accommodation');
       }
 
       // Handle successful accommodation creation
@@ -130,20 +98,19 @@ const AddAccommodationPage = () => {
       setFormData({
         id: '',
         name: '',
-        image: '',
         location: '',
         type: '',
         price: '',
         rating: '',
+        image: '',
         features: '',
+        bookingUrl: '', // Reset new field
       }); // Reset form
     } catch (error) {
       // Handle errors during the fetch or API call
-      let errorMessage = 'An error occurred while adding the accommodation.';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      setSubmitError(errorMessage);
+      setSubmitError(
+        error.message || 'An error occurred while adding the accommodation.'
+      );
       console.error('Error adding accommodation:', error);
     } finally {
       setIsSubmitting(false);
@@ -153,8 +120,8 @@ const AddAccommodationPage = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="mt-[6.5rem] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-[var(--enterprise-blue)] mb-6 flex items-center gap-2">
-          <Hotel className="w-6 h-6 text-[var(--enterprise-blue)]" />
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+          <Hotel className="w-6 h-6" />
           Add New Accommodation
         </h1>
 
@@ -165,7 +132,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="id"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               ID
             </Label>
@@ -177,11 +144,11 @@ const AddAccommodationPage = () => {
                 value={formData.id}
                 onChange={handleInputChange}
                 placeholder="Enter accommodation ID (e.g., hotel-name)"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 required
               />
             </div>
-            <p className="mt-2 text-sm text-[var(--enterprise-lightgray)]">
+            <p className="mt-2 text-sm text-gray-500">
               Unique identifier for the accommodation.
             </p>
           </div>
@@ -189,7 +156,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="name"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Name
             </Label>
@@ -201,7 +168,7 @@ const AddAccommodationPage = () => {
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Enter accommodation name"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 required
               />
             </div>
@@ -210,7 +177,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="location"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Location
             </Label>
@@ -222,7 +189,7 @@ const AddAccommodationPage = () => {
                 value={formData.location}
                 onChange={handleInputChange}
                 placeholder="Enter location (e.g., City, Region)"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 required
               />
             </div>
@@ -252,7 +219,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="price"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Price
             </Label>
@@ -264,7 +231,7 @@ const AddAccommodationPage = () => {
                 value={formData.price}
                 onChange={handleInputChange}
                 placeholder="Enter price per night"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 required
               />
             </div>
@@ -273,7 +240,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="rating"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Rating
             </Label>
@@ -285,7 +252,7 @@ const AddAccommodationPage = () => {
                 value={formData.rating}
                 onChange={handleInputChange}
                 placeholder="Enter rating (1-5)"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
               />
             </div>
           </div>
@@ -293,7 +260,7 @@ const AddAccommodationPage = () => {
           <div>
             <Label
               htmlFor="image"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Image URL
             </Label>
@@ -305,15 +272,38 @@ const AddAccommodationPage = () => {
                 value={formData.image}
                 onChange={handleInputChange}
                 placeholder="Enter image URL"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
               />
             </div>
           </div>
 
           <div>
             <Label
+              htmlFor="bookingUrl"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Booking URL
+            </Label>
+            <div className="mt-1">
+              <Input
+                type="url"
+                id="bookingUrl"
+                name="bookingUrl"
+                value={formData.bookingUrl}
+                onChange={handleInputChange}
+                placeholder="Enter booking.com URL for this accommodation"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              />
+            </div>
+            <p className="mt-2 text-sm text-gray-500">
+              Direct link to the booking page (e.g., booking.com).
+            </p>
+          </div>
+
+          <div>
+            <Label
               htmlFor="features"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
+              className="block text-sm font-medium text-gray-700"
             >
               Features
             </Label>
@@ -325,10 +315,10 @@ const AddAccommodationPage = () => {
                 onChange={handleInputChange}
                 placeholder="Enter features, separated by commas (e.g., WiFi, Pool, Parking)"
                 rows={3}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md min-h-[100px]"
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md min-h-[100px]"
               />
             </div>
-            <p className="mt-2 text-sm text-[var(--enterprise-lightgray)]">
+            <p className="mt-2 text-sm text-gray-500">
               List of features, separated by commas.
             </p>
           </div>

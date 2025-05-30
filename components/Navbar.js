@@ -75,10 +75,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav
-      className={`top-[25px] fixed w-full z-50 transition-all duration-300 
-                  backdrop-blur-lg `}
-    >
+    <nav className={`top-[25px] fixed w-full z-50 transition-all duration-300`}>
       <div className="max-w-[1440px] mx-auto">
         <div className="relative flex h-[5rem] px-8">
           {/* Blurred background wrapper */}
@@ -86,8 +83,7 @@ export default function Navbar() {
             className={`
               absolute inset-0 -z-[1] rounded-full 
               border-2 border-[var(--border-color)] 
-              bg-[rgba(214,215,216,0.25)] shadow-xl
-               
+              bg-[rgba(214,215,216,0.25)] shadow-xl backdrop-blur-lg
             `}
           />
 

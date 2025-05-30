@@ -212,10 +212,10 @@ const ManageToursPage = () => {
             Manage Tours
           </h1>
           <Link
-            href="/admin/add/tours/"
+            href="/admin/add/tour"
             className="inline-flex items-center text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] py-2 px-4 rounded-md shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--enterprise-blue)] transition-colors duration-200"
           >
-            Add New
+            <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>
         </div>
 

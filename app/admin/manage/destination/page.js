@@ -199,10 +199,10 @@ const ManageDestinationsPage = () => {
             Manage Destinations
           </h1>
           <Link
-            href="/admin/add/city/"
+            href="/admin/add/destination"
             className="inline-flex items-center text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] py-2 px-4 rounded-md shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--enterprise-blue)] transition-colors duration-200"
           >
-            Add New
+            <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>
         </div>
 
@@ -355,7 +355,7 @@ const ManageDestinationsPage = () => {
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {destination.image}
                         </td>
-                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
                           {destination.description}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">

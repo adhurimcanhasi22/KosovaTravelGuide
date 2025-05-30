@@ -4,7 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Hotel, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Hotel, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -29,7 +36,21 @@ const ManageAccommodationsPage = () => {
     type: '',
     price: '',
     rating: '',
+    image: '',
+    features: '',
+    bookingUrl: '', // New field
   });
+
+  // Define accommodation types for the select dropdown
+  const accommodationTypes = [
+    'Hotel',
+    'Motel',
+    'Resort',
+    'Guesthouse',
+    'Apartment',
+    'Hostel',
+    'Other',
+  ];
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -92,6 +113,9 @@ const ManageAccommodationsPage = () => {
       type: accommodation.type,
       price: accommodation.price,
       rating: accommodation.rating,
+      image: accommodation.image,
+      features: accommodation.features ? accommodation.features.join(', ') : '', // Convert array to comma-separated string
+      bookingUrl: accommodation.bookingUrl || '', // New field
     });
   };
 
@@ -110,7 +134,20 @@ const ManageAccommodationsPage = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editFormData),
+        body: JSON.stringify({
+          id: editFormData.id, // Ensure ID is sent for update if needed by backend
+          name: editFormData.name,
+          location: editFormData.location,
+          type: editFormData.type,
+          price: Number(editFormData.price),
+          rating: Number(editFormData.rating),
+          image: editFormData.image,
+          features: editFormData.features
+            .split(',')
+            .map((item) => item.trim())
+            .filter((item) => item),
+          bookingUrl: editFormData.bookingUrl, // Save new field
+        }),
       });
 
       const data = await res.json();
@@ -122,12 +159,17 @@ const ManageAccommodationsPage = () => {
         );
         setEditRowId(null);
         setSubmitSuccess(true);
+        setSubmitError(null); // Clear any previous errors
       } else {
-        setSubmitError(errorMessage);
+        setSubmitError(data.message || 'Failed to update accommodation');
+        setSubmitSuccess(false); // Clear any previous success
       }
     } catch (err) {
-      console.error(err);
-      alert('Something went wrong');
+      console.error('Error saving accommodation:', err);
+      setSubmitError(
+        err.message || 'Something went wrong while saving accommodation'
+      );
+      setSubmitSuccess(false);
     }
   };
 
@@ -204,10 +246,10 @@ const ManageAccommodationsPage = () => {
             Manage Accommodations
           </h1>
           <Link
-            href="/admin/add/accommodation/"
+            href="/admin/add/accommodation"
             className="inline-flex items-center text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] py-2 px-4 rounded-md shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--enterprise-blue)] transition-colors duration-200"
           >
-            Add New
+            <Plus className="mr-2 h-4 w-4" /> Add New
           </Link>
         </div>
 
@@ -289,6 +331,15 @@ const ManageAccommodationsPage = () => {
                     Rating
                   </th>
                   <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Image URL
+                  </th>
+                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Features
+                  </th>
+                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Booking URL
+                  </th>
+                  <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -303,7 +354,7 @@ const ManageAccommodationsPage = () => {
                     {editRowId === accommodation.id ? (
                       <>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
+                          <Input
                             name="id"
                             value={editFormData.id}
                             onChange={handleInputChange}
@@ -311,7 +362,7 @@ const ManageAccommodationsPage = () => {
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
+                          <Input
                             name="name"
                             value={editFormData.name}
                             onChange={handleInputChange}
@@ -319,7 +370,7 @@ const ManageAccommodationsPage = () => {
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
+                          <Input
                             name="location"
                             value={editFormData.location}
                             onChange={handleInputChange}
@@ -327,15 +378,29 @@ const ManageAccommodationsPage = () => {
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
-                            name="type"
+                          <Select
                             value={editFormData.type}
-                            onChange={handleInputChange}
-                            className="border px-2 py-1 w-full"
-                          />
+                            onValueChange={(value) =>
+                              handleInputChange({
+                                target: { name: 'type', value },
+                              })
+                            }
+                            className="w-full"
+                          >
+                            <SelectTrigger className="w-full border px-2 py-1">
+                              <SelectValue placeholder="Select a type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {accommodationTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
+                          <Input
                             name="price"
                             value={editFormData.price}
                             onChange={handleInputChange}
@@ -344,7 +409,7 @@ const ManageAccommodationsPage = () => {
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <input
+                          <Input
                             name="rating"
                             value={editFormData.rating}
                             onChange={handleInputChange}
@@ -353,6 +418,33 @@ const ManageAccommodationsPage = () => {
                             step="0.1"
                             min="0"
                             max="5"
+                          />
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <Input
+                            name="image"
+                            value={editFormData.image}
+                            onChange={handleInputChange}
+                            className="border px-2 py-1 w-full"
+                            type="url"
+                          />
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <Textarea
+                            name="features"
+                            value={editFormData.features}
+                            onChange={handleInputChange}
+                            className="border px-2 py-1 w-full"
+                            rows={2}
+                          />
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          <Input
+                            name="bookingUrl"
+                            value={editFormData.bookingUrl}
+                            onChange={handleInputChange}
+                            className="border px-2 py-1 w-full"
+                            type="url"
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -389,6 +481,15 @@ const ManageAccommodationsPage = () => {
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {accommodation.rating}
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm break-all max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                          {accommodation.image}
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                          {accommodation.features?.join(', ')}
+                        </td>
+                        <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm break-all max-w-xs overflow-hidden text-ellipsis whitespace-nowrap">
+                          {accommodation.bookingUrl}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <button

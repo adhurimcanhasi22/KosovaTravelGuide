@@ -269,7 +269,7 @@ const AddTravelTipPage = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-200"
+            className="w-full cursor-pointer text-white py-2 px-4 rounded-md bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] transition-colors duration-200"
           >
             {isSubmitting ? (
               <>
