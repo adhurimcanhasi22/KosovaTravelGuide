@@ -17,6 +17,13 @@ const nextConfig = {
         port: '',
         pathname: '/free-photo/**', // This pattern allows any path under /free-photo/
       },
+      {
+        protocol: 'https',
+        hostname: 'assets.hyatt.com', // ADD THIS ENTRY
+        port: '',
+        pathname:
+          '/content/dam/hyatt/hyattdam/images/2024/07/05/0509/TXNRH-R0006-Family-Suite-Bedroom.jpg/TXNRH-R0006-Family-Suite-Bedroom.16x9.jpg', // Be specific
+      },
     ],
   },
 };

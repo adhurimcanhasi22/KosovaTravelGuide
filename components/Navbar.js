@@ -2,43 +2,89 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { ChevronDown } from 'lucide-react';
+import axios from 'axios';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // State for mobile menu open/close
+  const [scrolled, setScrolled] = useState(false); // State for scroll effect on navbar
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State for user login status
   const router = useRouter();
   const pathname = usePathname();
 
-  const [dropdownOpen, setDropdownOpen] = useState(null);
+  // Desktop dropdown states
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
 
-  // Function to show the dropdown
-  const handleMouseEnter = (menu) => {
-    clearTimeout(hoverTimeout); // Clear any existing timeout
-    setDropdownOpen(menu); // Show the dropdown
+  // Mobile dropdown states
+  const [mobileDestinationsOpen, setMobileDestinationsOpen] = useState(false);
+  const [destinations, setDestinations] = useState([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(true);
+  const [destinationsError, setDestinationsError] = useState(null);
+
+  // Function to show the desktop dropdown
+  const handleDesktopMouseEnter = (menu) => {
+    clearTimeout(hoverTimeout);
+    setDesktopDropdownOpen(menu);
   };
 
-  // Function to hide the dropdown with a delay
-  const handleMouseLeave = () => {
+  // Function to hide the desktop dropdown with a delay
+  const handleDesktopMouseLeave = () => {
     const timeout = setTimeout(() => {
-      setDropdownOpen(null); // Hide the dropdown after the delay
-    }, 300); // Adjust the delay (in milliseconds) as needed
-    setHoverTimeout(timeout); // Store the timeout ID
+      setDesktopDropdownOpen(null);
+    }, 300);
+    setHoverTimeout(timeout);
   };
 
+  // Fetch destinations for the mobile dropdown
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      setLoadingDestinations(true);
+      setDestinationsError(null);
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) {
+          throw new Error('NEXT_PUBLIC_API_URL is not defined.');
+        }
+        const response = await axios.get(`${apiUrl}/public/destinations`);
+        if (response.data.status === 'SUCCESS') {
+          // Sort by creation date (assuming _id contains timestamp or add a createdAt field to your schema)
+          // For simplicity, we'll just take the first 6 as per the request, assuming the backend returns them in a consistent order.
+          // If you need a specific order (e.g., by creation date), you'd need to sort here or in the backend.
+          setDestinations(response.data.data || []);
+        } else {
+          throw new Error(
+            response.data.message || 'Failed to fetch destinations'
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching destinations:', err);
+        setDestinationsError(
+          err.response?.data?.message ||
+            err.message ||
+            'Failed to load destinations.'
+        );
+      } finally {
+        setLoadingDestinations(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Handle scroll for navbar styling
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => setIsOpen(false), [router.asPath]);
-
+  // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
+  // Check login status
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
@@ -56,23 +102,21 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      // Send a POST request to the logout endpoint
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/logout`, {
         method: 'POST',
-        credentials: 'include', // Ensure cookies are sent with the request
+        credentials: 'include',
       });
-
-      // Clear the token from localStorage
       localStorage.removeItem('token');
       setIsLoggedIn(false);
-
-      // Redirect to the homepage after logout
       router.push('/');
     } catch (error) {
       console.error(error);
       alert('Logout failed. Please try again.');
     }
   };
+
+  // Slice the destinations array to show only the first 6
+  const limitedDestinations = destinations.slice(0, 6);
 
   return (
     <nav className={`top-[25px] fixed w-full z-50 transition-all duration-300`}>
@@ -81,8 +125,8 @@ export default function Navbar() {
           {/* Blurred background wrapper */}
           <div
             className={`
-              absolute inset-0 -z-[1] rounded-full 
-              border-2 border-[var(--border-color)] 
+              absolute inset-0 -z-[1] rounded-full
+              border-2 border-[var(--border-color)]
               bg-[rgba(214,215,216,0.25)] shadow-xl backdrop-blur-lg
             `}
           />
@@ -111,75 +155,65 @@ export default function Navbar() {
               </div>
             </Link>
 
-            {/* Center Links */}
+            {/* Center Links (Desktop) */}
             <div className="hidden md:flex items-start space-x-9 ml-2 text-base font-semibold">
-              {' '}
-              {/* Add spacing */}
               <Link href="/" className="navbar-link">
                 Home
               </Link>
-              {/* Destinations Dropdown */}
+              {/* Destinations Dropdown (Desktop) */}
               <div
                 className="relative cursor-pointer group"
-                onMouseEnter={() => handleMouseEnter('destinations')}
-                onMouseLeave={handleMouseLeave}
+                onMouseEnter={() => handleDesktopMouseEnter('destinations')}
+                onMouseLeave={handleDesktopMouseLeave}
               >
                 <Link href="/destinations" className="flex items-center gap-2">
-                  <span className="navbar-link">Travel</span>
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 448 512"
-                    className="size-3 transition-transform duration-300 text-enterprise-gray group-hover:-rotate-180"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"></path>
-                  </svg>
+                  <span className="navbar-link">Destinations</span>
+                  <ChevronDown
+                    className={`size-3 transition-transform duration-300 text-enterprise-gray ${
+                      desktopDropdownOpen === 'destinations'
+                        ? '-rotate-180'
+                        : ''
+                    }`}
+                  />
                 </Link>
 
-                {/* Dropdown Content */}
+                {/* Dropdown Content (Desktop) */}
                 <div
                   className={`absolute top-full left-0 mt-0.5 bg-white rounded-lg shadow-lg p-4 w-[200px] z-50 transition-opacity duration-200 ${
-                    dropdownOpen === 'destinations'
+                    desktopDropdownOpen === 'destinations'
                       ? 'opacity-100 visible'
                       : 'opacity-0 invisible'
                   }`}
                 >
                   <ul className="space-y-2">
-                    <li>
-                      <Link
-                        href="/destinations/city1"
-                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
-                      >
-                        Planner
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/destinations/city2"
-                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
-                      >
-                        Map
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/destinations/city3"
-                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
-                      >
-                        FAQ
-                      </Link>
-                    </li>
+                    {loadingDestinations ? (
+                      <p className="text-gray-600">Loading...</p>
+                    ) : destinationsError ? (
+                      <p className="text-red-600">
+                        Error loading destinations.
+                      </p>
+                    ) : limitedDestinations.length > 0 ? (
+                      limitedDestinations.map((dest) => (
+                        <li key={dest.slug}>
+                          <Link
+                            href={`/destinations/${dest.slug}`}
+                            className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
+                          >
+                            {dest.name}
+                          </Link>
+                        </li>
+                      ))
+                    ) : (
+                      <p className="text-gray-600">
+                        No destinations available.
+                      </p>
+                    )}
                   </ul>
-                  {/* Dropdown Content */}
                 </div>
               </div>
-              {/* Other links */}
+              {/* Other links (Desktop) */}
               <Link href="/travel-tips" className="navbar-link">
-                Destinations
+                Travel Tips
               </Link>
               <Link href="/accommodations" className="navbar-link">
                 Accommodations
@@ -194,12 +228,12 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Right Section - Buttons (Conditional Rendering) */}
+            {/* Right Section - Buttons (Desktop) */}
             <div className="hidden md:flex items-center gap-4">
               {isLoggedIn ? (
                 <button
                   onClick={handleLogout}
-                  className="cursor-pointer px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                  className="cursor-pointer px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
                 >
                   Logout
@@ -208,16 +242,14 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/auth/login"
-                    className="px-4 py-2 rounded-full bg-white font-semibold text-lg 
+                    className="px-4 py-2 rounded-full bg-white font-semibold text-lg
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
                   >
                     Login
                   </Link>
-
-                  {/* Sign Up Button */}
                   <Link
                     href="/auth/signup"
-                    className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                    className="px-4 py-2 rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
                   >
                     Sign Up
@@ -228,7 +260,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-[var-(--enterpris-blue)] text-4xl"
+              className="md:hidden text-[var(--enterprise-blue)] text-4xl"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? '×' : '≡'}
@@ -239,17 +271,60 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isOpen && (
           <div
-            className="md:hidden rounded-t-2xl rounded-b-2xl lg:rounded-full 
+            className="md:hidden rounded-t-2xl rounded-b-2xl lg:rounded-full
                         border-2 border-[var(--border-color)] mt-1
-                        bg-[rgba(214,215,216,0.25)] "
+                        bg-[rgba(214,215,216,0.25)] backdrop-blur-lg"
           >
             <div className="flex flex-col space-y-4 p-6">
               <Link href="/" className="navbar-link">
                 Home
               </Link>
-              <Link href="/destinations" className="navbar-link">
-                Destinations
-              </Link>
+              {/* Destinations Dropdown (Mobile) */}
+              <div className="flex flex-col">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() =>
+                    setMobileDestinationsOpen(!mobileDestinationsOpen)
+                  }
+                >
+                  <span className="navbar-link !mb-0">Destinations</span>{' '}
+                  {/* Removed bottom margin */}
+                  <ChevronDown
+                    className={`size-4 transition-transform duration-300 ${
+                      mobileDestinationsOpen ? '-rotate-180' : ''
+                    }`}
+                  />
+                </div>
+                {mobileDestinationsOpen && (
+                  <div className="pl-4 pt-2 space-y-2">
+                    {loadingDestinations ? (
+                      <p className="text-[var(--enterprise-gray)]">
+                        Loading destinations...
+                      </p>
+                    ) : destinationsError ? (
+                      <p className="text-red-600">
+                        Error loading destinations.
+                      </p>
+                    ) : limitedDestinations.length > 0 ? (
+                      limitedDestinations.map((dest) => (
+                        <Link
+                          key={dest.slug}
+                          href={`/destinations/${dest.slug}`}
+                          className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
+                          onClick={() => setIsOpen(false)} // Close mobile menu on click
+                        >
+                          {dest.name}
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-gray-600">
+                        No destinations available.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* Other mobile links */}
               <Link href="/travel-tips" className="navbar-link">
                 Travel Tips
               </Link>
@@ -268,7 +343,7 @@ export default function Navbar() {
                 {isLoggedIn ? (
                   <button
                     onClick={handleLogout}
-                    className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                    className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
                   >
                     Logout
@@ -277,16 +352,14 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/auth/login"
-                      className="px-4 py-2 mx-10 text-center rounded-full bg-white font-semibold text-lg 
+                      className="px-4 py-2 mx-10 text-center rounded-full bg-white font-semibold text-lg
                          text-[var(--enterprise-blue)] hover:bg-[var(--eggshell)] hover:text-[var(--enterprise-black)] border-3 hover:border-amber-200 transition-all duration-300"
                     >
                       Login
                     </Link>
-
-                    {/* Sign Up Button */}
                     <Link
                       href="/auth/signup"
-                      className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg 
+                      className="px-4 py-2 mx-10 text-center rounded-full bg-[var(--enterprise-blue)]  font-semibold text-lg
                          text-white hover:bg-[var(--enterprise-black)] border-[var(--enterprise-blue)] border-3 hover:border-amber-200 transition-all duration-300"
                     >
                       Sign Up

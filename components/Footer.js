@@ -1,6 +1,49 @@
+'use client';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function Footer() {
+  const [topDestinations, setTopDestinations] = useState([]);
+  const [loadingDestinations, setLoadingDestinations] = useState(true);
+  const [destinationsError, setDestinationsError] = useState(null);
+
+  useEffect(() => {
+    const fetchTopDestinations = async () => {
+      setLoadingDestinations(true);
+      setDestinationsError(null);
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!apiUrl) {
+          throw new Error('NEXT_PUBLIC_API_URL is not defined.');
+        }
+        const response = await axios.get(
+          `${apiUrl}/public/destinations?_sort=createdAt&_limit=6`
+        );
+        if (response.data.status === 'SUCCESS') {
+          setTopDestinations(response.data.data || []);
+        } else {
+          throw new Error(
+            response.data.message || 'Failed to fetch top destinations'
+          );
+        }
+      } catch (err) {
+        console.error('Error fetching top destinations:', err);
+        setDestinationsError(
+          err.response?.data?.message ||
+            err.message ||
+            'Failed to load destinations.'
+        );
+      } finally {
+        setLoadingDestinations(false);
+      }
+    };
+
+    fetchTopDestinations();
+  }, []);
+
+  const firstSixDestinations = topDestinations.slice(0, 6);
+
   return (
     <footer className="bg-gray-900 text-white pt-16 pb-8">
       <div className="container-custom">
@@ -113,54 +156,24 @@ export default function Footer() {
               Top Destinations
             </h3>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/destinations/pristina"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Pristina
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/destinations/prizren"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Prizren
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/destinations/peja"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Peja
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/destinations/gjakova"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Gjakova
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/destinations/rugova-valley"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Rugova Valley
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/destinations/mirusha-waterfalls"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
-                  Mirusha Waterfalls
-                </Link>
-              </li>
+              {loadingDestinations ? (
+                <li>Loading destinations...</li>
+              ) : destinationsError ? (
+                <li>Error loading destinations.</li>
+              ) : firstSixDestinations.length > 0 ? (
+                firstSixDestinations.map((destination) => (
+                  <li key={destination.slug}>
+                    <Link
+                      href={`/destinations/${destination.slug}`}
+                      className="text-gray-300 hover:text-white transition-colors"
+                    >
+                      {destination.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <li>No destinations available.</li>
+              )}
             </ul>
           </div>
 
@@ -196,7 +209,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} Kosovo Travel Guide. All rights
+            © {new Date().getFullYear()} Kosovo Travel Guide. All rights
             reserved.
           </p>
           <div className="mt-4 space-x-6">

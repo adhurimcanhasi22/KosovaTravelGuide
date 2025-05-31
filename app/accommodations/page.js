@@ -157,21 +157,21 @@ export default function AccommodationPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="relative h-[350px] w-full">
-        <Image
-          src="https://img.freepik.com/free-photo/cozy-studio-apartment-with-bedroom-living-space_1262-12323.jpg?t=st=1748619619~exp=1748623219~hmac=f3c60b5f943d470b36b9d098e2bb5ead0cee2d3910fc5986eec0d295c5436093&w=2000" // Ensure this image path is correct
-          alt="Accommodation Background"
-          fill
-          className="object-cover"
-          priority
-          onError={(e) => {
-            e.target.src =
-              'https://placehold.co/1200x350/cccccc/333333?text=Accommodation+Background';
-          }}
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/10">
-          <h1 className="text-4xl font-bold drop-shadow-lg">
-            Accommodation in Kosovo
+      <div className="relative h-[500px] w-full">
+        <div className="absolute inset-0 w-full h-full">
+          <img
+            src="https://assets.hyatt.com/content/dam/hyatt/hyattdam/images/2024/07/05/0509/TXNRH-R0006-Family-Suite-Bedroom.jpg/TXNRH-R0006-Family-Suite-Bedroom.16x9.jpg?imwidth=1920"
+            alt="Accommodation Background"
+            className="object-cover w-full h-full"
+            onError={(e) => {
+              e.target.src =
+                'https://placehold.co/1200x350/cccccc/333333?text=Accommodation+Background';
+            }}
+          />
+        </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/25">
+          <h1 className="text-4xl font-bold drop-shadow-lg px-4 py-2 rounded">
+            Accommodation in Kosova
           </h1>
           <h5 className="text-lg mt-2 drop-shadow-md">
             Find the best places to stay across the country
