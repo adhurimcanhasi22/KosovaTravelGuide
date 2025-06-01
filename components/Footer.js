@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaLinkedinIn } from 'react-icons/fa'; // Import LinkedIn icon
 
 export default function Footer() {
   const [topDestinations, setTopDestinations] = useState([]);
@@ -59,36 +60,36 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4 ">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=61576798537052"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
               >
-                <i className="fab fa-facebook-f text-xl hover:text-kosovo-yellow transition-colors"></i>
+                <i className="fab fa-facebook-f text-xl text-white hover:text-[var(--enterprise-yellow)] transition-colors"></i>
               </a>
               <a
-                href="https://twitter.com"
+                href="https://www.linkedin.com/in/kosovatravelguide/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Twitter"
+                aria-label="LinkedIn"
               >
-                <i className="fab fa-twitter text-xl hover:text-kosovo-yellow transition-colors"></i>
+                <FaLinkedinIn className="text-xl text-white hover:text-[var(--enterprise-yellow)]  transition-colors" />{' '}
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/kosovatravelguide/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
               >
-                <i className="fab fa-instagram text-xl hover:text-kosovo-yellow transition-colors"></i>
+                <i className="fab fa-instagram text-xl text-white hover:text-[var(--enterprise-yellow)]  transition-colors"></i>
               </a>
               <a
-                href="https://youtube.com"
+                href="https://www.youtube.com/@KosovaTravelGuide"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
               >
-                <i className="fab fa-youtube text-xl hover:text-kosovo-yellow transition-colors"></i>
+                <i className="fab fa-youtube text-xl text-white hover:text-[var(--enterprise-yellow)]  transition-colors"></i>
               </a>
             </div>
           </div>
@@ -186,16 +187,23 @@ export default function Footer() {
               <li className="flex items-start space-x-3">
                 <i className="fas fa-map-marker-alt mt-1 text-kosovo-yellow"></i>
                 <span className="text-gray-300">
-                  Mother Teresa Boulevard, Pristina, Kosovo
+                  Mother Teresa Boulevard, Pristina, Kosova
                 </span>
               </li>
               <li className="flex items-start space-x-3">
-                <i className="fas fa-envelope mt-1 text-kosovo-yellow"></i>
-                <span className="text-gray-300">info@kosova-travel.com</span>
+                <a
+                  href="mailto:kosovatravelguide@gmail.com"
+                  className="flex items-center space-x-3 text-white transition-colors"
+                >
+                  <i className="fas fa-envelope mt-1"></i>
+                  <span className="text-gray-300 hover:text-[var(--enterprise-yellow)]">
+                    kosovatravelguide@gmail.com
+                  </span>
+                </a>
               </li>
               <li className="flex items-start space-x-3">
                 <i className="fas fa-phone-alt mt-1 text-kosovo-yellow"></i>
-                <span className="text-gray-300">+383 44 123 456</span>
+                <span className="text-gray-300">+383 46 131 115</span>
               </li>
               <li className="flex items-start space-x-3">
                 <i className="fas fa-clock mt-1 text-kosovo-yellow"></i>
@@ -215,21 +223,15 @@ export default function Footer() {
           <div className="mt-4 space-x-6">
             <Link
               href="/privacy-policy"
-              className="hover:text-white transition-colors"
+              className="text-white hover:text-[var(--enterprise-yellow)] transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              href="/terms-of-service"
-              className="hover:text-white transition-colors"
+              href="/terms-service"
+              className="text-white hover:text-[var(--enterprise-yellow)] transition-colors"
             >
               Terms of Service
-            </Link>
-            <Link
-              href="/cookie-policy"
-              className="hover:text-white transition-colors"
-            >
-              Cookie Policy
             </Link>
           </div>
         </div>

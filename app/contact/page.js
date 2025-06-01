@@ -17,7 +17,7 @@ export default function ContactPage() {
       </Head>
 
       {/* Hero Section Styled Exactly Like Provided Screenshot */}
-      <div className=" mt-[4rem] relative h-[40vh] min-h-[300px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
+      <div className="relative h-[40vh] min-h-[400px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-[var(--enterprise-gray)]">
             <span className="text-[var(--enterprise-blue)]">Contact Us</span>
@@ -66,20 +66,19 @@ export default function ContactPage() {
                 <h3 className="text-xl font-bold mb-4">Contact Information</h3>
                 <ul className="space-y-4 text-[var(--enterprise-gray)]">
                   <li>
-                    <strong>Address:</strong> Mother Teresa Boulevard 123,
-                    Pristina 10000, Kosovo
+                    <strong>Address:</strong> Mother Teresa Boulevard, Pristina
+                    10000, Kosova
                   </li>
                   <li>
-                    <strong>Email:</strong> info@kosovo-travel.com
+                    <strong>Email:</strong> kosovatravelguide@gmail.com
                   </li>
                   <li>
-                    <strong>Phone:</strong> +383 44 123 456
+                    <strong>Phone:</strong> +383 46 131 115
                   </li>
                   <li>
                     <strong>Working Hours:</strong>
                     <br /> Mon-Fri: 9:00 AM - 5:00 PM
-                    <br /> Sat: 10:00 AM - 2:00 PM
-                    <br /> Sun: Closed
+                    <br /> Sat-Sun: Closed
                   </li>
                 </ul>
               </div>
@@ -98,11 +97,11 @@ export default function ContactPage() {
                     Pristina Office
                   </h3>
                   <p className="text-gray-600">
-                    Mother Teresa Boulevard 123, Pristina 10000, Kosovo
+                    Mother Teresa Boulevard, Pristina 10000, Kosova
                   </p>
-                  <p className="text-gray-600">Phone: +383 44 123 456</p>
+                  <p className="text-gray-600">Phone: +383 46 131 115</p>
                   <p className="text-gray-600">
-                    Email: pristina@kosovo-travel.com
+                    Email: kosovatravelguide@gmail.com
                   </p>
                 </div>
 
@@ -112,24 +111,26 @@ export default function ContactPage() {
                     Prizren Office
                   </h3>
                   <p className="text-gray-600">
-                    Shadervan Square 45, Prizren 20000, Kosovo
+                    Shadervan Square, Prizren 20000, Kosova
                   </p>
-                  <p className="text-gray-600">Phone: +383 44 789 012</p>
+                  <p className="text-gray-600">Phone: +383 46 131 115</p>
                   <p className="text-gray-600">
-                    Email: prizren@kosovo-travel.com
+                    Email: kosovatravelguide@gmail.com
                   </p>
                 </div>
 
                 {/* Office 3 */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h3 className="font-bold text-xl text-[var(--enterprise-lightblue)] mb-2">
-                    Peja Office
+                    Mitrovica Office
                   </h3>
                   <p className="text-gray-600">
-                    Mbretëresha Teutë Street 78, Peja 30000, Kosovo
+                    Mbretëresha Teutë Street , Mitrovica 40000, Kosova
                   </p>
-                  <p className="text-gray-600">Phone: +383 44 345 678</p>
-                  <p className="text-gray-600">Email: peja@kosovo-travel.com</p>
+                  <p className="text-gray-600">Phone: +383 46 131 115</p>
+                  <p className="text-gray-600">
+                    Email: kosovatravelguide@gmail.com
+                  </p>
                 </div>
               </div>
             </div>
@@ -169,12 +170,9 @@ export default function ContactPage() {
                   What payment methods do you accept?
                 </h3>
                 <p className="text-gray-600">
-                  Credit/debit cards, bank transfers, PayPal, and cash
-                  (in-office bookings).
+                  Bank transfers and cash (in-office bookings).
                 </p>
               </div>
-
-              {/* Additional FAQs as desired */}
             </div>
           )}
         </div>

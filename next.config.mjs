@@ -24,6 +24,12 @@ const nextConfig = {
         pathname:
           '/content/dam/hyatt/hyattdam/images/2024/07/05/0509/TXNRH-R0006-Family-Suite-Bedroom.jpg/TXNRH-R0006-Family-Suite-Bedroom.16x9.jpg', // Be specific
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

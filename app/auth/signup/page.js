@@ -334,14 +334,14 @@ export default function SignUp() {
               >
                 I agree to the{' '}
                 <a
-                  href="#"
+                  href="/terms-service"
                   className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
                 >
                   Terms
                 </a>{' '}
                 and{' '}
                 <a
-                  href="#"
+                  href="/privacy-policy"
                   className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-skyblue)]"
                 >
                   Privacy Policy

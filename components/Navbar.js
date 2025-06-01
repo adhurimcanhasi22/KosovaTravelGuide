@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { ChevronDown } from 'lucide-react';
-import axios from 'axios';
+import { ChevronDown } from 'lucide-react'; // Import ChevronDown icon
+import axios from 'axios'; // For fetching destinations
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false); // State for mobile menu open/close
@@ -144,22 +144,27 @@ export default function Navbar() {
               {/* Stacked Text */}
               <div className="hidden sm:flex sm:flex-col sm:justify-center sm:pt-10 sm:pr-11">
                 <span className="pb-10 flex items-center text-[var(--enterprise-blue)] hover:text-[var(--enterprise-black)] text-2xl font-bold">
-                  Kosova Travel
+                  Kosova Travel Guide
                 </span>
               </div>
 
               <div className="sm:hidden flex items-center">
                 <span className="text-[var(--enterprise-blue)] hover:text-[var(--enterprise-black)] text-xl font-bold">
-                  Kosova Travel
+                  Kosova Travel Guide
                 </span>
               </div>
             </Link>
 
             {/* Center Links (Desktop) */}
-            <div className="hidden md:flex items-start space-x-9 ml-2 text-base font-semibold">
+            <div className="hidden md:flex items-start space-x-9 mr-4 text-base font-semibold">
               <Link href="/" className="navbar-link">
                 Home
               </Link>
+              {isLoggedIn && (
+                <Link href="/dashboard" className="navbar-link">
+                  Dashboard
+                </Link>
+              )}
               {/* Destinations Dropdown (Desktop) */}
               <div
                 className="relative cursor-pointer group"
@@ -221,11 +226,9 @@ export default function Navbar() {
               <Link href="/tours" className="navbar-link">
                 Tours
               </Link>
-              {isLoggedIn && (
-                <Link href="/dashboard" className="navbar-link">
-                  Dashboard
-                </Link>
-              )}
+              <Link href="/contact" className="navbar-link">
+                Contact
+              </Link>
             </div>
 
             {/* Right Section - Buttons (Desktop) */}
@@ -279,6 +282,11 @@ export default function Navbar() {
               <Link href="/" className="navbar-link">
                 Home
               </Link>
+              {isLoggedIn && (
+                <Link href="/dashboard" className="navbar-link">
+                  Dashboard
+                </Link>
+              )}
               {/* Destinations Dropdown (Mobile) */}
               <div className="flex flex-col">
                 <div
@@ -334,11 +342,9 @@ export default function Navbar() {
               <Link href="/tours" className="navbar-link">
                 Tours
               </Link>
-              {isLoggedIn && (
-                <Link href="/dashboard" className="navbar-link">
-                  Dashboard
-                </Link>
-              )}
+              <Link href="/contact" className="navbar-link">
+                Contact
+              </Link>
               <div className="flex flex-col gap-4 mt-4">
                 {isLoggedIn ? (
                   <button

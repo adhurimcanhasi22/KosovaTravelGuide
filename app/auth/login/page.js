@@ -10,7 +10,6 @@ export default function Login() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -220,22 +219,7 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="rememberMe"
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-kosovo-blue focus:ring-kosovo-blue border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-[var(--enterprise-lightgray)]"
-                >
-                  Remember me
-                </label>
-              </div>
+              <div className="flex items-center"></div>
 
               <div className="text-sm">
                 <a
