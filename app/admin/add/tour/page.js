@@ -22,9 +22,8 @@ const AddTourPage = () => {
     groupSize: '',
     price: '',
     description: '',
-    date: '', // For the specific tour date
-    location: '', // General location of the tour
-    images: '', // Multiple image URLs
+    location: '',
+    highlights: '',
   });
 
   useEffect(() => {
@@ -93,14 +92,14 @@ const AddTourPage = () => {
         body: JSON.stringify({
           id: formData.id,
           name: formData.name,
-          image: formData.image,
+          image: formData.image, // Send single image URL
           duration: formData.duration,
           groupSize: Number(formData.groupSize),
           price: Number(formData.price),
           description: formData.description,
-          date: formData.date,
+          // Removed: date from body
           location: formData.location,
-          images: formData.images
+          highlights: formData.highlights // Convert comma-separated string to array
             .split(',')
             .map((item) => item.trim())
             .filter((item) => item),
@@ -129,9 +128,9 @@ const AddTourPage = () => {
         groupSize: '',
         price: '',
         description: '',
-        date: '',
+        // Removed: date from reset
         location: '',
-        images: '',
+        highlights: '', // Reset highlights field
       });
     } catch (error) {
       let errorMessage = 'An error occurred while adding the tour.';
@@ -216,7 +215,7 @@ const AddTourPage = () => {
                 name="image"
                 value={formData.image}
                 onChange={handleInputChange}
-                placeholder="Enter image URL"
+                placeholder="Enter main image URL"
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
               />
             </div>
@@ -283,29 +282,7 @@ const AddTourPage = () => {
             </div>
           </div>
 
-          <div>
-            <Label
-              htmlFor="date"
-              className="block text-sm font-medium text-[var(--enterprise-blue)]"
-            >
-              Date
-            </Label>
-            <div className="mt-1">
-              <Input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                placeholder="Select tour date"
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md"
-                required
-              />
-            </div>
-            <p className="mt-2 text-sm text-[var(--enterprise-lightgray)]">
-              The specific date this tour will occur.
-            </p>
-          </div>
+          {/* Removed Date input field */}
 
           <div>
             <Label
@@ -351,24 +328,24 @@ const AddTourPage = () => {
 
           <div>
             <Label
-              htmlFor="images"
+              htmlFor="highlights"
               className="block text-sm font-medium text-[var(--enterprise-blue)]"
             >
-              Image URLs
+              Highlights
             </Label>
             <div className="mt-1">
               <Textarea
-                id="images"
-                name="images"
-                value={formData.images}
+                id="highlights"
+                name="highlights"
+                value={formData.highlights}
                 onChange={handleInputChange}
-                placeholder="Enter image URLs, separated by commas"
-                rows={3}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md min-h-[80px]"
+                placeholder="Enter tour highlights, separated by commas (e.g., Explore unique architecture, Visit Ethnographic Museum)"
+                rows={4}
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-[var(--enterprise-lightblue)] rounded-md min-h-[100px]"
               />
             </div>
             <p className="mt-2 text-sm text-[var(--enterprise-lightgray)]">
-              List of image URLs, separated by commas.
+              List of key highlights for the tour, separated by commas.
             </p>
           </div>
 

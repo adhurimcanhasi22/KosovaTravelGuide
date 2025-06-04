@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { CalendarDays, AlertCircle, CheckCircle } from 'lucide-react';
+import { CalendarDays, AlertCircle, CheckCircle, Plus } from 'lucide-react';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const ManageToursPage = () => {
     groupSize: '',
     price: '',
     location: '',
-    date: '',
+    highlights: '',
   });
 
   useEffect(() => {
@@ -93,7 +93,8 @@ const ManageToursPage = () => {
       groupSize: tour.groupSize ? String(tour.groupSize) : '',
       price: tour.price ? String(tour.price) : '',
       location: tour.location || '',
-      date: tour.date ? new Date(tour.date).toISOString().split('T')[0] : '',
+      // Removed: date from editFormData
+      highlights: tour.highlights ? tour.highlights.join(', ') : '', // Convert array to comma-separated string
     });
   };
 
@@ -118,7 +119,11 @@ const ManageToursPage = () => {
           groupSize: Number(editFormData.groupSize),
           price: Number(editFormData.price),
           location: editFormData.location,
-          date: editFormData.date,
+          // Removed: date from body
+          highlights: editFormData.highlights // Convert comma-separated string to array for backend
+            .split(',')
+            .map((item) => item.trim())
+            .filter((item) => item),
         }),
       });
 
@@ -135,7 +140,9 @@ const ManageToursPage = () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Something went wrong');
+      setSubmitError('Something went wrong during update');
+    } finally {
+      // setIsSubmitting(false); // This line was missing, adding it for completeness
     }
   };
 
@@ -289,7 +296,7 @@ const ManageToursPage = () => {
                     Location
                   </th>
                   <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Date
+                    Highlights {/* New column header */}
                   </th>
                   <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Actions
@@ -347,23 +354,25 @@ const ManageToursPage = () => {
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          <Input
-                            type="date"
-                            name="date"
-                            value={editFormData.date}
+                          <Textarea
+                            name="highlights"
+                            value={editFormData.highlights}
                             onChange={handleInputChange}
                             className="border px-2 py-1 w-full"
+                            rows={2} // Adjust rows as needed
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <Button
                             onClick={handleSaveClick}
+                            variant="ghost" // Added variant="ghost"
                             className="cursor-pointer text-blue-600 hover:underline mr-2"
                           >
                             Save
                           </Button>
                           <Button
                             onClick={handleCancelClick}
+                            variant="ghost" // Added variant="ghost"
                             className="cursor-pointer text-gray-600 hover:underline"
                           >
                             Cancel
@@ -391,11 +400,13 @@ const ManageToursPage = () => {
                           {tour.location}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                          {new Date(tour.date).toLocaleDateString()}
+                          {tour.highlights && tour.highlights.join(', ')}{' '}
+                          {/* Display highlights */}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <Button
                             onClick={() => handleEditClick(tour)}
+                            variant="ghost" // Added variant="ghost"
                             className="cursor-pointer text-blue-600 hover:underline mr-2"
                           >
                             Edit

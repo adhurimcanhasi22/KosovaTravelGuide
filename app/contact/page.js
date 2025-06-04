@@ -17,14 +17,23 @@ export default function ContactPage() {
       </Head>
 
       {/* Hero Section Styled Exactly Like Provided Screenshot */}
-      <div className="relative h-[40vh] min-h-[400px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--enterprise-gray)]">
-            <span className="text-[var(--enterprise-blue)]">Contact Us</span>
+      <div className="relative h-[40vh] min-h-[500px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
+        <img
+          src="https://img.freepik.com/free-photo/close-up-person-working-call-center_23-2149288224.jpg?t=st=1749043854~exp=1749047454~hmac=ae660f77afc30fda9b212e277568eb2473f00dd70de17ced91f7ddc8ce762d39&w=2000"
+          alt="Accommodation Background"
+          className="object-cover w-full h-full"
+          onError={(e) => {
+            e.target.src =
+              'https://placehold.co/1200x350/cccccc/333333?text=Accommodation+Background';
+          }}
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/25">
+          <h1 className="text-4xl font-bold drop-shadow-lg px-4 py-2 rounded">
+            Contact Us
           </h1>
-          <p className="text-xl text-[var(--enterprise-gray)] mt-4">
+          <h5 className="text-lg mt-2 drop-shadow-md">
             We're here to help you plan your perfect Kosovo experience
-          </p>
+          </h5>
         </div>
       </div>
 
