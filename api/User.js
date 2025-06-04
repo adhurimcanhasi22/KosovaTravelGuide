@@ -903,7 +903,7 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
 });
 // --- Contact Form Submission Route ---
 router.post('/contact', async (req, res) => {
-  const { name, email, subject, message } = req.body;
+  const { name, email, subject, message } = req.body; // 'message' will now contain the formatted HTML from frontend
 
   // Basic validation
   if (!name || !email || !message) {
@@ -925,14 +925,8 @@ router.post('/contact', async (req, res) => {
     const mailOptions = {
       from: `"${name}" <${email}>`, // Sender's name and email from the form
       to: process.env.RECIPIENT_EMAIL, // Your email address where you want to receive messages
-      subject: `Contact Form: ${subject || 'No Subject'}`,
-      html: `
-        <p><strong>From:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message}</p>
-      `,
+      subject: subject || 'No Subject', // Use the subject sent from the frontend
+      html: message, // Use the HTML message sent from the frontend
     };
 
     await transporter.sendMail(mailOptions);
