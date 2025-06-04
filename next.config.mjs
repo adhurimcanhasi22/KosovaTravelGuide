@@ -30,6 +30,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.raymond.in', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.yourstory.com', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
