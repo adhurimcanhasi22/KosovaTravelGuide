@@ -391,37 +391,48 @@ router.delete('/destinations/:slug', protect, admin, async (req, res) => {
   }
 });
 
+// --- Tour Routes (Admin Only) ---
 // @desc    Create a new tour
 // @route   POST /api/admin/tours
 // @access  Private/Admin
 router.post('/tours', protect, admin, async (req, res) => {
   try {
+    // Expecting a single 'image' field, not 'images'
     const {
+      id,
       name,
       description,
       price,
-      date,
       location,
-      images,
-      id,
+      image,
       duration,
       groupSize,
-    } = req.body;
+      highlights,
+    } = req.body; // Removed 'date'
 
-    // Basic input validation - now including date
+    // Basic input validation - now including highlights
     if (
       !id ||
       !name ||
       !description ||
       !price ||
-      !date ||
       !location ||
       !duration ||
       !groupSize
     ) {
+      // Removed 'date'
       return res
         .status(400)
         .json({ status: 'FAILED', message: 'Missing required fields' });
+    }
+
+    // Check if tour with this ID already exists
+    const tourExists = await Tour.findOne({ id });
+    if (tourExists) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'Tour with this ID already exists.',
+      });
     }
 
     const newTour = new Tour({
@@ -429,11 +440,12 @@ router.post('/tours', protect, admin, async (req, res) => {
       name,
       description,
       price,
-      date,
+      // Removed: date
       location,
-      images,
+      image, // Pass single image URL
       duration,
       groupSize,
+      highlights: highlights || [], // Store highlights array
     });
 
     const createdTour = await newTour.save();
@@ -457,6 +469,7 @@ router.post('/tours', protect, admin, async (req, res) => {
       .json({ status: 'FAILED', message: 'Server error creating tour' });
   }
 });
+
 // @desc    Get all tours
 // @route   GET /api/admin/tours
 // @access  Private/Admin
@@ -472,12 +485,12 @@ router.get('/tours', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Get a single tour by your custom ID
+// @desc    Get a single tour by ID
 // @route   GET /api/admin/tours/:id
 // @access  Private/Admin
 router.get('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const tour = await Tour.findOne({ id: req.params.id }); // Use findOne with a query object
+    const tour = await Tour.findById(req.params.id);
     if (!tour) {
       return res
         .status(404)
@@ -492,7 +505,7 @@ router.get('/tours/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Update a tour by your custom ID
+// @desc    Update a tour by ID
 // @route   PUT /api/admin/tours/:id
 // @access  Private/Admin
 router.put('/tours/:id', protect, admin, async (req, res) => {
@@ -501,24 +514,42 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
       name,
       description,
       price,
-      date,
       location,
-      images,
+      image,
       duration,
       groupSize,
-    } = req.body; // Include all relevant fields
+      highlights,
+    } = req.body; // Removed 'date'
+    // Basic input validation
+    if (
+      !name &&
+      !description &&
+      !price &&
+      !location &&
+      !image &&
+      !duration &&
+      !groupSize &&
+      !highlights
+    ) {
+      // Removed 'date'
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'At least one field to update is required',
+      });
+    }
 
-    const updatedTour = await Tour.findOneAndUpdate(
-      { id: req.params.id }, // Query by your custom ID
+    const updatedTour = await Tour.findByIdAndUpdate(
+      req.params.id,
       {
         name,
         description,
         price,
-        date,
+        // Removed: date
         location,
-        images,
+        image, // Update single image
         duration,
         groupSize,
+        highlights: highlights || [], // Update highlights array
       },
       { new: true, runValidators: true }
     );
@@ -545,12 +576,12 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
   }
 });
 
-// @desc    Delete a tour by your custom ID
+// @desc    Delete a tour by ID
 // @route   DELETE /api/admin/tours/:id
 // @access  Private/Admin
 router.delete('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const deletedTour = await Tour.findOneAndDelete({ id: req.params.id }); // Query by your custom ID
+    const deletedTour = await Tour.findByIdAndDelete(req.params.id);
 
     if (!deletedTour) {
       return res
