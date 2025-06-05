@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import axios from 'axios'; // Using axios for fetching data
+import BookmarkButton from '../../components/BookmarkButton';
 
 import {
   CalendarDays,
@@ -148,6 +149,9 @@ export default function AccommodationPage() {
         return null; // Or a generic icon if no specific match
     }
   };
+  const handleBookmarkToggle = (newIsBookmarked) => {
+    console.log('Bookmark status toggled in ToursPage:', newIsBookmarked);
+  };
 
   // Extract unique cities for the dropdown
   const uniqueCities = useMemo(() => {
@@ -277,6 +281,7 @@ export default function AccommodationPage() {
                   </div>
                 </div>
                 <div className="p-5 flex flex-col text-left">
+                  {/* Name and Rating */}
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-black">
                       {hotel.name}
@@ -288,15 +293,26 @@ export default function AccommodationPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center text-gray-600 mt-2 space-x-2">
-                    <MapPin className="h-6 w-6 text-red-400" />
-                    <span>{hotel.location}</span>
+                  {/* Location, Type, and Bookmark Button Row */}
+                  <div className="flex items-start justify-between mt-4">
+                    <div>
+                      <div className="flex items-center text-gray-600 space-x-2">
+                        <MapPin className="h-6 w-6 text-red-400" />
+                        <span>{hotel.location}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Building className="h-6 w-6 text-black" />
+                        <span>{hotel.type}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <BookmarkButton
+                        itemId={hotel.id}
+                        bookmarkType="accommodation"
+                        onToggle={handleBookmarkToggle}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center text-gray-600 mt-2 space-x-2">
-                    <Building className="h-6 w-6 text-black" />
-                    <span>{hotel.type}</span>
-                  </div>
-
                   <hr className="my-4 border-gray-200" />
                   <div className="flex flex-wrap gap-2">
                     {hotel.features &&

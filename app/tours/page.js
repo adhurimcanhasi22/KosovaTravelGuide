@@ -1,8 +1,8 @@
 'use client';
-// Removed 'next/image' as we are using a standard <img> tag for simplicity in debugging.
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import axios from 'axios'; // Using axios for fetching data
+import BookmarkButton from '../../components/BookmarkButton';
 
 import {
   CalendarDays, // For tour date
@@ -167,6 +167,9 @@ export default function ToursPage() {
         return <Info className="h-4 w-4 text-gray-600" />; // Generic icon
     }
   };
+  const handleBookmarkToggle = (newIsBookmarked) => {
+    console.log('Bookmark status toggled in ToursPage:', newIsBookmarked);
+  };
 
   // Extract unique locations for the dropdown
   const uniqueLocations = useMemo(() => {
@@ -302,7 +305,7 @@ export default function ToursPage() {
           <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedTours.map((tour) => (
               <div
-                key={tour.id}
+                key={tour._id}
                 className="bg-white rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col text-center relative"
               >
                 <div className="relative w-full h-[300px]">
@@ -326,13 +329,11 @@ export default function ToursPage() {
                     <h3 className="text-xl font-semibold text-black">
                       {tour.name}
                     </h3>
-                    {/* If you add rating to tours, you can uncomment this */}
-                    {/* <div className="flex items-center space-x-1">
-                      <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                      <span className="text-gray-700 font-medium text-sm">
-                        {tour.rating}
-                      </span>
-                    </div> */}
+                    <BookmarkButton
+                      itemId={tour.id}
+                      bookmarkType="tour"
+                      onToggle={handleBookmarkToggle}
+                    />
                   </div>
                   <div className="flex items-center text-gray-600 mt-2 space-x-2">
                     <MapPin className="h-6 w-6 text-red-400" />
@@ -525,7 +526,7 @@ export default function ToursPage() {
           </div>
 
           <div className="max-w-4xl mx-auto space-y-6">
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-3 text-gray-800">
                 What languages do your guides speak?
               </h3>
@@ -536,7 +537,7 @@ export default function ToursPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-3 text-gray-800">
                 How many people are typically in a tour group?
               </h3>
@@ -548,7 +549,7 @@ export default function ToursPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-3 text-gray-800">
                 What is your cancellation policy?
               </h3>
@@ -560,7 +561,7 @@ export default function ToursPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-3 text-gray-800">
                 Are meals included in the tour price?
               </h3>
@@ -572,7 +573,7 @@ export default function ToursPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
+            <div className="bg-white rounded-lg p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-3 text-gray-800">
                 What type of accommodation is provided on multi-day tours?
               </h3>

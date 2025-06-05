@@ -1,8 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Import js-cookie for token access
+import BookmarkButton from '../../components/BookmarkButton'; // Import the BookmarkButton component
 
 export default function Dashboard() {
   const router = useRouter();
@@ -13,19 +15,40 @@ export default function Dashboard() {
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [updateStatus, setUpdateStatus] = useState({ message: '', type: '' }); // For success/error messages
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
+  // New state for bookmarks and a trigger for refreshing them
+  const [bookmarkedItems, setBookmarkedItems] = useState([]);
+  const [refreshBookmarks, setRefreshBookmarks] = useState(false); // State to trigger re-fetch of bookmarks
+
+  const fetchUserDataAndBookmarks = useCallback(async () => {
+    setIsLoading(true);
+    setError('');
+    const token = localStorage.getItem('token'); // Get token from localStorage
     if (!token) {
       router.push('/auth/login');
-      return; // Stop execution if no token
+      return;
     }
 
-    const fetchUserData = async () => {
-      setIsLoading(true);
-      setError('');
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/user/profile`,
+    try {
+      // Fetch user profile data
+      const userResponse = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (userResponse.data.status === 'SUCCESS') {
+        setUserData(userResponse.data.data);
+        setFormData({
+          name: userResponse.data.data.name,
+          email: userResponse.data.data.email,
+        });
+
+        // Fetch user bookmarks
+        const bookmarksResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/user/bookmarks`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -33,41 +56,37 @@ export default function Dashboard() {
           }
         );
 
-        if (response.data.status === 'SUCCESS') {
-          setUserData(response.data.data);
-          // Initialize form data when user data is fetched
-          setFormData({
-            name: response.data.data.name,
-            email: response.data.data.email,
-          });
+        if (bookmarksResponse.data.status === 'SUCCESS') {
+          setBookmarkedItems(bookmarksResponse.data.data || []);
         } else {
-          // Handle backend error message
-          throw new Error(response.data.message || 'Failed to fetch profile');
+          console.warn(
+            'Failed to fetch bookmarks:',
+            bookmarksResponse.data.message
+          );
+          setBookmarkedItems([]); // Clear bookmarks if fetch failed
         }
-      } catch (err) {
-        console.error('Auth or fetch error:', err);
-        setError(
-          err.response?.data?.message ||
-            err.message ||
-            'An error occurred fetching your data.'
-        );
-        // If token is invalid (e.g., 401 Unauthorized), clear it and redirect
-        if (err.response?.status === 401) {
-          localStorage.removeItem('token');
-          router.push('/auth/login');
-        } else {
-          // Keep loading state false for other errors to show the error message
-          setIsLoading(false);
-        }
-        // No need for finally block here if setting loading in error cases
-        return; // Stop if error occurred
+      } else {
+        throw new Error(userResponse.data.message || 'Failed to fetch profile');
       }
-      // Only set loading false on success
+    } catch (err) {
+      console.error('Auth or fetch error:', err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          'An error occurred fetching your data.'
+      );
+      if (err.response?.status === 401) {
+        Cookies.remove('token'); // Clear invalid token
+        router.push('/auth/login');
+      }
+    } finally {
       setIsLoading(false);
-    };
-
-    fetchUserData();
+    }
   }, [router]);
+
+  useEffect(() => {
+    fetchUserDataAndBookmarks();
+  }, [fetchUserDataAndBookmarks, refreshBookmarks]); // Re-fetch when refreshBookmarks is toggled
 
   // --- Handle Edit Form Changes ---
   const handleFormChange = (e) => {
@@ -78,7 +97,7 @@ export default function Dashboard() {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setUpdateStatus({ message: 'Updating...', type: 'info' });
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token'); // Get token from localStorage
     if (!token) {
       router.push('/auth/login');
       return;
@@ -120,6 +139,111 @@ export default function Dashboard() {
   // --- Helper function for User Icon ---
   const getUserInitial = (name) => {
     return name ? name.charAt(0).toUpperCase() : '?';
+  };
+
+  // --- Bookmarked Item Card Component ---
+  // This component will render each bookmarked item in a simplified card format
+  const BookmarkedItemCard = ({ bookmark, onRemoveBookmark }) => {
+    // Determine the title based on bookmark type
+    const getTitle = () => {
+      switch (bookmark.type) {
+        case 'accommodation':
+          return bookmark.name || 'Accommodation';
+        case 'tour':
+          return bookmark.name || 'Tour';
+        case 'destination':
+          return bookmark.name || 'Destination';
+        default:
+          return 'Bookmarked Item';
+      }
+    };
+
+    // Determine specific details to show based on type
+    const renderDetails = () => {
+      switch (bookmark.type) {
+        case 'accommodation':
+          return (
+            <>
+              <p className="text-gray-600 text-sm">
+                €{bookmark.price}/night | {bookmark.location}
+              </p>
+              <p className="text-gray-600 text-sm capitalize">
+                Type: {bookmark.type}
+              </p>
+              {bookmark.rating && (
+                <p className="text-gray-600 text-sm">
+                  Rating: {bookmark.rating} ★
+                </p>
+              )}
+            </>
+          );
+        case 'tour':
+          return (
+            <>
+              <p className="text-gray-600 text-sm">
+                From €{bookmark.price}/person | {bookmark.location}
+              </p>
+              <p className="text-gray-600 text-sm">
+                Duration: {bookmark.duration} | Group: {bookmark.groupSize}
+              </p>
+            </>
+          );
+        case 'destination':
+          return (
+            <p className="text-gray-600 text-sm">
+              {bookmark.description?.substring(0, 70)}...
+            </p>
+          );
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <div className="relative bg-white rounded-lg shadow-md overflow-hidden transition-all duration-200 hover:shadow-lg">
+        {/* Bookmark button positioned on the top right */}
+        <div className="absolute top-2 right-2 z-10">
+          <BookmarkButton
+            itemId={bookmark.itemId}
+            bookmarkType={bookmark.bookmarkType} // Use original bookmarkType from DB
+            onToggle={onRemoveBookmark} // Callback to trigger refresh on removal
+          />
+        </div>
+        <Link
+          href={
+            bookmark.bookmarkType === 'city' && bookmark.slug
+              ? `/${bookmark.slug}`
+              : bookmark.type === 'tour'
+              ? `/tours/#detail-${bookmark.itemId}`
+              : bookmark.type === 'accommodation'
+              ? `/accommodations/#detail-${bookmark.itemId}`
+              : bookmark.route || '#'
+          }
+          className="block cursor-pointer"
+        >
+          <div className="w-full h-36 md:h-48 overflow-hidden bg-gray-200">
+            <img
+              src={
+                bookmark.image ||
+                'https://placehold.co/400x300/cccccc/333333?text=No+Image'
+              }
+              alt={getTitle()}
+              className="object-cover w-full h-full"
+              onError={(e) => {
+                e.target.src =
+                  'https://placehold.co/400x300/cccccc/333333?text=No+Image';
+              }}
+            />
+          </div>
+          <div className="p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+              {getTitle()}
+            </h3>
+            {renderDetails()}
+          </div>
+        </Link>
+      </div>
+    );
   };
 
   // --- Render Logic ---
@@ -298,27 +422,26 @@ export default function Dashboard() {
           )}
         </form>
 
-        {/* Bookmarks Section (Placeholder) */}
+        {/* Bookmarks Section */}
         <div className="p-4 md:p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">
             My Bookmarks
           </h2>
-          {userData.bookmarks && userData.bookmarks.length > 0 ? (
-            <ul>
-              {userData.bookmarks.map((bookmark) => (
-                <li key={bookmark._id || bookmark}>
-                  {' '}
-                  {/* Use _id if populated, otherwise assume it's just the ID */}
-                  {/* Replace with actual bookmark display logic - e.g., Link to place */}
-                  Bookmark ID:{' '}
-                  {typeof bookmark === 'object' ? bookmark._id : bookmark}
-                  {/* {typeof bookmark === 'object' ? bookmark.name : 'Loading...'} */}
-                </li>
+          {bookmarkedItems.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {bookmarkedItems.map((bookmark) => (
+                <BookmarkedItemCard
+                  key={bookmark.itemId} // Using itemId as key as it's unique for each type
+                  bookmark={bookmark}
+                  onRemoveBookmark={() =>
+                    setRefreshBookmarks(!refreshBookmarks)
+                  }
+                />
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="text-sm text-gray-600">
-              You haven't bookmarked any places yet.
+              You haven't bookmarked any items yet.
             </p>
           )}
         </div>

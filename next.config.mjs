@@ -42,6 +42,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.cdndtl.co.uk', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

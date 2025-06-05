@@ -97,7 +97,7 @@ const TravelTipsPage = () => {
       <div className="relative h-[500px] w-full">
         {' '}
         <img
-          src="https://img.freepik.com/free-photo/magnifying-glass-wooden-cubes-travel-elements_23-2148077211.jpg?t=st=1749043073~exp=1749046673~hmac=6d3188086be49f708b45dfac9845d7deea7e15678746a70aa37ddfe31aeb49dd&w=2000"
+          src="https://img.cdndtl.co.uk/x1xkqhj4w3lh/73039df1-10b7-4cb1-aad2-e4cd3885a171/863324762917a4442b37c5f1f8ab6c3b/Travel_tips4.jpg?auto=format&s=166d6e2ea31c93a53d71977eeeb97c86"
           alt="Accommodation Background"
           className="object-cover w-full h-full"
           onError={(e) => {

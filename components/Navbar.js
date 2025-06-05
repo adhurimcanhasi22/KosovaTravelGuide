@@ -10,7 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false); // State for scroll effect on navbar
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State for user login status
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname(); 
 
   // Desktop dropdown states
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(null);
@@ -119,7 +119,9 @@ export default function Navbar() {
   const limitedDestinations = destinations.slice(0, 6);
 
   return (
-    <nav className={`top-[25px] fixed w-full z-50 transition-all duration-300`}>
+    <nav
+      className={`top-[25px] fixed w-full z-5000 transition-all duration-300`}
+    >
       <div className="max-w-[1440px] mx-auto">
         <div className="relative flex h-[5rem] px-8">
           {/* Blurred background wrapper */}
@@ -230,7 +232,6 @@ export default function Navbar() {
                 Contact
               </Link>
             </div>
-
             {/* Right Section - Buttons (Desktop) */}
             <div className="hidden md:flex items-center gap-4">
               {isLoggedIn ? (
