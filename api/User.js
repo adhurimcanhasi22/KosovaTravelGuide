@@ -19,6 +19,9 @@ const City = require('../models/City');
 //mongodb Accommodation model
 const Accommodation = require('../models/Accommodation');
 
+//mongodb Tour model
+const Tour = require('../models/Tour');
+
 // email handler
 const nodemailer = require('nodemailer');
 
@@ -758,7 +761,7 @@ router.put('/profile', protect, async (req, res) => {
   }
 });
 
-// --- Protected Route to Get User Bookmarks (Revised to fetch names) ---
+// --- Protected Route to Get User Bookmarks (Revised to fetch full data for display) ---
 router.get('/bookmarks', protect, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -771,30 +774,72 @@ router.get('/bookmarks', protect, async (req, res) => {
 
     const populatedBookmarks = await Promise.all(
       user.bookmarks.map(async (bookmark) => {
-        let item;
+        let item = null;
+        let bookmarkData = { ...bookmark.toObject() }; // Start with existing bookmark data
+
         if (bookmark.bookmarkType === 'city') {
-          item = await City.findById(bookmark.itemId).select('name slug'); // Fetch name and slug
-          return {
-            ...bookmark.toObject(),
-            name: item?.name,
-            slug: item?.slug,
-            route: `/cities/${item?.slug}`,
-          };
+          item = await City.findById(bookmark.itemId).select(
+            'name slug image description'
+          );
+          if (item) {
+            bookmarkData = {
+              ...bookmarkData,
+              name: item.name,
+              slug: item.slug,
+              image: item.image,
+              description: item.description,
+              route: `/destinations/${item.slug}`,
+              type: 'destination', // Use 'destination' for frontend rendering
+            };
+          }
         } else if (bookmark.bookmarkType === 'accommodation') {
           item = await Accommodation.findOne({ id: bookmark.itemId }).select(
-            'name'
-          ); // Fetch name
-          return {
-            ...bookmark.toObject(),
-            name: item?.name,
-            route: `/accommodations/${bookmark.itemId}`,
-          };
+            'name image price type location rating'
+          );
+          if (item) {
+            bookmarkData = {
+              ...bookmarkData,
+              name: item.name,
+              image: item.image,
+              price: item.price,
+              type: item.type, // E.g., 'Hotel', 'Guesthouse'
+              location: item.location,
+              rating: item.rating,
+              route: `/accommodations/${bookmark.itemId}`,
+              type: 'accommodation',
+            };
+          }
+        } else if (bookmark.bookmarkType === 'tour') {
+          // Assuming Tour model exists and is imported, and has an 'id' field
+          item = await Tour.findOne({ id: bookmark.itemId }).select(
+            'name image price duration groupSize location description'
+          );
+          if (item) {
+            bookmarkData = {
+              ...bookmarkData,
+              name: item.name,
+              image: item.image,
+              price: item.price,
+              duration: item.duration,
+              groupSize: item.groupSize,
+              location: item.location,
+              description: item.description,
+              route: `/tours/${bookmark.itemId}`, // Assuming tours have a unique string ID for their detail page
+              type: 'tour',
+            };
+          }
         }
-        return bookmark.toObject(); // If type is unknown
+        // If item is not found or type is unknown, return basic bookmark data
+        return bookmarkData;
       })
     );
 
-    res.json({ status: 'SUCCESS', data: populatedBookmarks });
+    // Filter out bookmarks where the associated item was not found (optional, but good for cleanup)
+    const validPopulatedBookmarks = populatedBookmarks.filter(
+      (item) => item.name
+    );
+
+    res.json({ status: 'SUCCESS', data: validPopulatedBookmarks });
   } catch (error) {
     console.error('Error fetching user bookmarks:', error);
     res
@@ -828,6 +873,9 @@ router.post('/bookmarks/add', protect, async (req, res) => {
       itemExists = await City.exists({ _id: itemId }); // Assuming itemId is ObjectId for cities
     } else if (bookmarkType === 'accommodation') {
       itemExists = await Accommodation.exists({ id: itemId }); // Assuming itemId is string ID for accommodations
+    } else if (bookmarkType === 'tour') {
+      // Added tour check
+      itemExists = await Tour.exists({ id: itemId }); // Assuming itemId is string ID for tours
     } else {
       return res
         .status(400)
@@ -871,6 +919,10 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
     const userId = req.user.userId;
     const { bookmarkType, itemId } = req.body;
 
+    console.log(
+      `[Bookmark Remove] Received: bookmarkType=${bookmarkType}, itemId=${itemId}, userId=${userId}`
+    );
+
     if (!bookmarkType || !itemId) {
       return res
         .status(400)
@@ -884,24 +936,41 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
         .json({ status: 'FAILED', message: 'User not found' });
     }
 
+    // Filter out the bookmark to be removed
+    const initialBookmarkCount = user.bookmarks.length;
     user.bookmarks = user.bookmarks.filter(
       (bookmark) =>
         !(
           bookmark.bookmarkType === bookmarkType &&
-          bookmark.itemId.toString() === itemId
+          bookmark.itemId.toString() === itemId.toString()
         )
     );
 
+    if (user.bookmarks.length === initialBookmarkCount) {
+      // If the count hasn't changed, it means the item wasn't found to remove
+      console.log(
+        `[Bookmark Remove] Item not found in user's bookmarks: ${bookmarkType} - ${itemId} for user ${userId}`
+      );
+      return res.status(404).json({
+        status: 'FAILED',
+        message: 'Bookmark not found for this user.',
+      });
+    }
+
     await user.save();
+    console.log(
+      `[Bookmark Remove] Bookmark removed: ${bookmarkType} - ${itemId} for user ${userId}`
+    );
     res.status(200).json({ status: 'SUCCESS', message: 'Bookmark removed' });
   } catch (error) {
-    console.error('Error removing bookmark:', error);
+    console.error('[Bookmark Remove] Error removing bookmark:', error);
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error removing bookmark' });
   }
 });
-// --- Contact Form Submission Route ---
+
+// --- NEW/UPDATED: Contact Form Submission Route (now handles custom tour data) ---
 router.post('/contact', async (req, res) => {
   const { name, email, subject, message } = req.body; // 'message' will now contain the formatted HTML from frontend
 
@@ -944,5 +1013,4 @@ router.post('/contact', async (req, res) => {
     });
   }
 });
-
 module.exports = router;

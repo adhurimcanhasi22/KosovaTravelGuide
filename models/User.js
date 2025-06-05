@@ -31,11 +31,10 @@ const UserSchema = new Schema({
         type: Schema.Types.ObjectId, // Assuming your city/accommodation IDs are ObjectIds
         required: true,
       },
-      // Optional: You could store a reference to the actual item if you create models later
-      // item: {
-      //   type: Schema.Types.ObjectId,
-      //   refPath: 'bookmarks.bookmarkType', // Dynamic reference
-      // },
+      itemId: {
+        type: String, // Store as string to handle custom IDs
+        required: true,
+      },
       createdAt: {
         type: Date,
         default: Date.now,
