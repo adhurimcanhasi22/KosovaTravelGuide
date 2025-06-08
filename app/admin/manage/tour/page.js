@@ -359,20 +359,20 @@ const ManageToursPage = () => {
                             value={editFormData.highlights}
                             onChange={handleInputChange}
                             className="border px-2 py-1 w-full"
-                            rows={2} // Adjust rows as needed
+                            rows={2}
                           />
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <Button
                             onClick={handleSaveClick}
-                            variant="ghost" // Added variant="ghost"
+                            variant="ghost"
                             className="cursor-pointer text-blue-600 hover:underline mr-2"
                           >
                             Save
                           </Button>
                           <Button
                             onClick={handleCancelClick}
-                            variant="ghost" // Added variant="ghost"
+                            variant="ghost"
                             className="cursor-pointer text-gray-600 hover:underline"
                           >
                             Cancel
@@ -401,7 +401,6 @@ const ManageToursPage = () => {
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           {tour.highlights && tour.highlights.join(', ')}{' '}
-                          {/* Display highlights */}
                         </td>
                         <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                           <Button

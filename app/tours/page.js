@@ -497,15 +497,7 @@ export default function ToursPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-4 mt-4">
-                    <Link
-                      href="/booking" // Replace with actual booking URL if available in tour data
-                      className="bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] text-white px-4 py-2 rounded flex items-center gap-2"
-                    >
-                      <CalendarDays className="h-5 w-5" />
-                      Book Now
-                    </Link>
-                  </div>
+                  <div className="flex gap-4 mt-4"></div>
                 </div>
               </div>
             ))}
@@ -640,7 +632,7 @@ export default function ToursPage() {
                   experience.
                 </p>
                 <Link
-                  href="/contact"
+                  href="/booking"
                   className="w-full flex items-center justify-center text-white bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] py-2 px-4 rounded-md font-medium transition-colors duration-200 shadow"
                 >
                   <Info className="mr-2 h-5 w-5" /> Contact Us

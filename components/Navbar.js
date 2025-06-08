@@ -10,7 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false); // State for scroll effect on navbar
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State for user login status
   const router = useRouter();
-  const pathname = usePathname(); 
+  const pathname = usePathname();
 
   // Desktop dropdown states
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(null);
@@ -18,6 +18,7 @@ export default function Navbar() {
 
   // Mobile dropdown states
   const [mobileDestinationsOpen, setMobileDestinationsOpen] = useState(false);
+  const [mobileTravelOpen, setMobileTravelOpen] = useState(false); // Add this line
   const [destinations, setDestinations] = useState([]);
   const [loadingDestinations, setLoadingDestinations] = useState(true);
   const [destinationsError, setDestinationsError] = useState(null);
@@ -219,9 +220,60 @@ export default function Navbar() {
                 </div>
               </div>
               {/* Other links (Desktop) */}
-              <Link href="/travel-tips" className="navbar-link">
-                Travel Tips
-              </Link>
+              <div
+                className="relative cursor-pointer group"
+                onMouseEnter={() => handleDesktopMouseEnter('travel')} // Set state to 'travel'
+                onMouseLeave={handleDesktopMouseLeave}
+              >
+                <Link href="#" className="flex items-center gap-2">
+                  {' '}
+                  {/* No specific main page for 'Travel' */}
+                  <span className="navbar-link">Travel</span>
+                  <ChevronDown
+                    className={`size-3 transition-transform duration-300 text-enterprise-gray ${
+                      desktopDropdownOpen === 'travel' // Controlled by 'travel' state
+                        ? '-rotate-180'
+                        : ''
+                    }`}
+                  />
+                </Link>
+
+                {/* Dropdown Content (Desktop) */}
+                <div
+                  className={`absolute top-full left-0 mt-0.5 bg-white rounded-lg shadow-lg p-4 w-[200px] z-50 transition-opacity duration-200 ${
+                    desktopDropdownOpen === 'travel' // Controlled by 'travel' state
+                      ? 'opacity-100 visible'
+                      : 'opacity-0 invisible'
+                  }`}
+                >
+                  <ul className="space-y-2">
+                    <li>
+                      <Link
+                        href="/travel-tips"
+                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
+                      >
+                        Tips
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/travel-planner"
+                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
+                      >
+                        Planner
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/booking"
+                        className="text-[var(--link-color)] hover:text-[var(--enterprise-blue)]"
+                      >
+                        Booking
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
               <Link href="/accommodations" className="navbar-link">
                 Accommodations
               </Link>
@@ -334,9 +386,45 @@ export default function Navbar() {
                 )}
               </div>
               {/* Other mobile links */}
-              <Link href="/travel-tips" className="navbar-link">
-                Travel Tips
-              </Link>
+              <div className="flex flex-col">
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  // Assuming you have a state like mobileTravelOpen and its setter
+                  onClick={() => setMobileTravelOpen(!mobileTravelOpen)}
+                >
+                  <span className="navbar-link !mb-0">Travel</span>{' '}
+                  <ChevronDown
+                    className={`size-4 transition-transform duration-300 ${
+                      mobileTravelOpen ? '-rotate-180' : '' // Corrected variable name here
+                    }`}
+                  />
+                </div>
+                {mobileTravelOpen && ( // Corrected variable name here
+                  <div className="pl-4 pt-2 space-y-2">
+                    <Link
+                      href="/travel-tips"
+                      className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
+                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                    >
+                      Tips
+                    </Link>
+                    <Link
+                      href="/travel-planner"
+                      className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
+                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                    >
+                      Planner
+                    </Link>
+                    <Link
+                      href="/booking"
+                      className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
+                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                    >
+                      Booking
+                    </Link>
+                  </div>
+                )}
+              </div>
               <Link href="/accommodations" className="navbar-link">
                 Accommodations
               </Link>

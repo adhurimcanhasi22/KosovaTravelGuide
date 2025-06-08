@@ -5,6 +5,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Import js-cookie for token access
 import BookmarkButton from '../../components/BookmarkButton'; // Import the BookmarkButton component
+import { ListChecks, PlaneTakeoff } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -18,6 +19,10 @@ export default function Dashboard() {
   // New state for bookmarks and a trigger for refreshing them
   const [bookmarkedItems, setBookmarkedItems] = useState([]);
   const [refreshBookmarks, setRefreshBookmarks] = useState(false); // State to trigger re-fetch of bookmarks
+
+  const [travelPlanSummary, setTravelPlanSummary] = useState(null);
+  const [isTravelPlanLoading, setIsTravelPlanLoading] = useState(true);
+  const [travelPlanError, setTravelPlanError] = useState(null);
 
   const fetchUserDataAndBookmarks = useCallback(async () => {
     setIsLoading(true);
@@ -83,6 +88,61 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   }, [router]);
+
+  const fetchTravelPlanSummary = useCallback(async () => {
+    setIsTravelPlanLoading(true);
+    setTravelPlanError(null);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      // Not logged in, no plan to fetch or display
+      setTravelPlanSummary(null);
+      setIsTravelPlanLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/travelplan`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.status === 'SUCCESS') {
+        setTravelPlanSummary(response.data.data);
+      } else {
+        throw new Error(
+          response.data.message || 'Failed to fetch travel plan summary'
+        );
+      }
+    } catch (err) {
+      console.error('Error fetching travel plan summary:', err);
+      setTravelPlanError(
+        err.response?.data?.message ||
+          err.message ||
+          'Failed to load travel plan summary.'
+      );
+      // If 401, token might be invalid, handled by main fetch, but good to be explicit here too
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        router.push('/auth/login'); // Redirect to login if token is invalid
+      }
+    } finally {
+      setIsTravelPlanLoading(false);
+    }
+  }, [router]);
+  const totalChecklistItems = travelPlanSummary?.checklist?.length || 0;
+  const completedChecklistItems =
+    travelPlanSummary?.checklist?.filter((item) => item.isCompleted).length ||
+    0;
+  const travelPlanProgress = travelPlanSummary?.progressPercentage || 0;
+
+  useEffect(() => {
+    fetchTravelPlanSummary();
+  }, [fetchTravelPlanSummary]);
 
   useEffect(() => {
     fetchUserDataAndBookmarks();
@@ -442,6 +502,69 @@ export default function Dashboard() {
           ) : (
             <p className="text-sm text-gray-600">
               You haven't bookmarked any items yet.
+            </p>
+          )}
+        </div>
+
+        <div className="p-4 md:p-6 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">
+            Travel Planner Progress
+          </h2>
+          {isTravelPlanLoading ? (
+            <p className="text-sm text-gray-600">
+              Loading travel plan progress...
+            </p>
+          ) : travelPlanError ? (
+            <div className="text-sm text-red-600">
+              <p>Error: {travelPlanError}</p>
+              <button
+                onClick={fetchTravelPlanSummary}
+                className="text-blue-600 hover:underline"
+              >
+                Try again
+              </button>
+            </div>
+          ) : travelPlanSummary ? (
+            <Link
+              href="/travel-planner"
+              className="block p-4 bg-blue-50 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-2">
+                  <ListChecks className="h-6 w-6 text-blue-600" />
+                  <h3 className="text-base font-semibold text-blue-800">
+                    Your Trip Preparation
+                  </h3>
+                </div>
+                <PlaneTakeoff className="h-6 w-6 text-blue-600" />{' '}
+                {/* A nice icon for travel */}
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-4 overflow-hidden mb-2">
+                <div
+                  className="bg-blue-600 h-4 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${travelPlanProgress}%` }}
+                ></div>
+              </div>
+              <p className="text-sm text-blue-700">
+                You've completed{' '}
+                <span className="font-bold">{completedChecklistItems}</span> out
+                of <span className="font-bold">{totalChecklistItems}</span>{' '}
+                steps. (<span className="font-bold">{travelPlanProgress}%</span>{' '}
+                complete)
+              </p>
+              <p className="text-xs text-blue-500 mt-1">
+                Click to view/manage your full travel plan.
+              </p>
+            </Link>
+          ) : (
+            <p className="text-sm text-gray-600">
+              No travel plan found. Start planning your trip to Kosovo!
+              <Link
+                href="/travel-planner"
+                className="text-blue-600 hover:underline ml-1"
+              >
+                Go to Planner
+              </Link>
             </p>
           )}
         </div>
