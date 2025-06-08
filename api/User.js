@@ -22,6 +22,9 @@ const Accommodation = require('../models/Accommodation');
 //mongodb Tour model
 const Tour = require('../models/Tour');
 
+//mongodb TravelPlan model
+const TravelPlan = require('../models/TravelPlan');
+
 // email handler
 const nodemailer = require('nodemailer');
 
@@ -970,7 +973,7 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
   }
 });
 
-// --- NEW/UPDATED: Contact Form Submission Route (now handles custom tour data) ---
+// --- Contact Form Submission Route (now handles custom tour data) ---
 router.post('/contact', async (req, res) => {
   const { name, email, subject, message } = req.body; // 'message' will now contain the formatted HTML from frontend
 
@@ -1013,4 +1016,248 @@ router.post('/contact', async (req, res) => {
     });
   }
 });
+
+// Define the default checklist items for a new travel plan
+const defaultChecklistItems = [
+  {
+    id: 'documents-passport-expiry',
+    label: 'Check passport/ID expiry and validity',
+    category: 'Documents',
+    isCompleted: false,
+  },
+  {
+    id: 'documents-visa-requirements',
+    label: 'Research visa requirements for Kosovo',
+    category: 'Documents',
+    isCompleted: false,
+  },
+  {
+    id: 'documents-travel-insurance',
+    label: 'Arrange travel insurance',
+    category: 'Documents',
+    isCompleted: false,
+  },
+  {
+    id: 'packing-essentials-summer',
+    label: 'Pack light clothing, swimwear (Summer: June-Sept)',
+    category: 'Packing',
+    isCompleted: false,
+  },
+  {
+    id: 'packing-essentials-autumn',
+    label: 'Pack layers, light jacket (Autumn: Oct-Nov)',
+    category: 'Packing',
+    isCompleted: false,
+  },
+  {
+    id: 'packing-essentials-winter',
+    label: 'Pack warm clothing, heavy coat, snow boots (Winter: Dec-Mar)',
+    category: 'Packing',
+    isCompleted: false,
+  },
+  {
+    id: 'packing-essentials-spring',
+    label: 'Pack light layers, umbrella (Spring: Apr-May)',
+    category: 'Packing',
+    isCompleted: false,
+  },
+  {
+    id: 'health-vaccinations',
+    label: 'Check recommended vaccinations',
+    category: 'Health',
+    isCompleted: false,
+  },
+  {
+    id: 'health-medication',
+    label: 'Prepare essential personal medication',
+    category: 'Health',
+    isCompleted: false,
+  },
+  {
+    id: 'transportation-flights',
+    label: 'Book flights to Kosovo',
+    category: 'Transportation',
+    isCompleted: false,
+  },
+  {
+    id: 'transportation-local',
+    label: 'Plan local transportation (car rental/taxis)',
+    category: 'Transportation',
+    isCompleted: false,
+  },
+  {
+    id: 'itinerary-tours',
+    label: 'Consider booking a planned tour from our list',
+    category: 'Itinerary',
+    isCompleted: false,
+  },
+  {
+    id: 'itinerary-destinations-accommodation',
+    label: 'Choose destinations and book accommodation',
+    category: 'Itinerary',
+    isCompleted: false,
+  },
+  {
+    id: 'finance-currency',
+    label: 'Familiarize with local currency (Euro)',
+    category: 'Finance',
+    isCompleted: false,
+  },
+  {
+    id: 'finance-budget',
+    label: 'Set a daily budget for the trip',
+    category: 'Finance',
+    isCompleted: false,
+  },
+  {
+    id: 'communication-sim-card',
+    label: 'Consider local SIM card or roaming plan',
+    category: 'Communication',
+    isCompleted: false,
+  },
+  {
+    id: 'communication-emergency-contacts',
+    label: 'Save emergency contacts and embassy details',
+    category: 'Communication',
+    isCompleted: false,
+  },
+];
+
+// Helper function to calculate progress percentage
+const calculateProgress = (checklist) => {
+  if (!checklist || checklist.length === 0) {
+    return 0;
+  }
+  const completedItems = checklist.filter((item) => item.isCompleted).length;
+  return Math.round((completedItems / checklist.length) * 100);
+};
+
+// @desc    Get user's travel plan or create a new one if none exists
+// @route   GET /user/travelplan
+// @access  Private
+router.get('/travelplan', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    let travelPlan = await TravelPlan.findOne({ userId });
+
+    if (!travelPlan) {
+      // If no plan exists, create a new one with default items
+      travelPlan = new TravelPlan({
+        userId,
+        checklist: defaultChecklistItems.map((item) => ({
+          id: item.id,
+          isCompleted: item.isCompleted,
+        })),
+      });
+      await travelPlan.save();
+    }
+
+    const progressPercentage = calculateProgress(travelPlan.checklist);
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Travel plan fetched successfully',
+      data: {
+        ...travelPlan.toObject(),
+        progressPercentage,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching/creating travel plan:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching or creating travel plan',
+    });
+  }
+});
+
+// @desc    Update the completion status of a checklist item in the travel plan
+// @route   PUT /user/travelplan/:itemId
+// @access  Private
+router.put('/travelplan/:itemId', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { itemId } = req.params;
+    const { isCompleted } = req.body;
+
+    if (typeof isCompleted !== 'boolean') {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'Invalid isCompleted status provided.',
+      });
+    }
+
+    const travelPlan = await TravelPlan.findOne({ userId });
+
+    if (!travelPlan) {
+      return res.status(404).json({
+        status: 'FAILED',
+        message: 'Travel plan not found for this user.',
+      });
+    }
+
+    // Find the item and update its status
+    const itemIndex = travelPlan.checklist.findIndex(
+      (item) => item.id === itemId
+    );
+
+    if (itemIndex > -1) {
+      travelPlan.checklist[itemIndex].isCompleted = isCompleted;
+      travelPlan.markModified('checklist'); // Mark the array as modified for Mongoose to save changes
+      await travelPlan.save();
+    } else {
+      // If the item doesn't exist, we might want to add it or return an error
+      // For now, let's return an error if it's not found in the existing checklist
+      return res.status(404).json({
+        status: 'FAILED',
+        message: `Checklist item with ID ${itemId} not found.`,
+      });
+    }
+
+    const progressPercentage = calculateProgress(travelPlan.checklist);
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Travel plan updated successfully',
+      data: {
+        ...travelPlan.toObject(),
+        progressPercentage,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating travel plan item:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error updating travel plan' });
+  }
+});
+
+// @desc    Delete the user's travel plan (resets it)
+// @route   DELETE /user/travelplan
+// @access  Private
+router.delete('/travelplan', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const result = await TravelPlan.deleteOne({ userId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        status: 'FAILED',
+        message: 'No travel plan found to delete for this user.',
+      });
+    }
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message:
+        'Travel plan deleted successfully. A new plan will be created upon next access.',
+    });
+  } catch (error) {
+    console.error('Error deleting travel plan:', error);
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error deleting travel plan' });
+  }
+});
+
 module.exports = router;

@@ -510,6 +510,7 @@ router.get('/tours/:id', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.put('/tours/:id', protect, admin, async (req, res) => {
   try {
+    const { id } = req.params;
     const {
       name,
       description,
@@ -519,8 +520,7 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
       duration,
       groupSize,
       highlights,
-    } = req.body; // Removed 'date'
-    // Basic input validation
+    } = req.body;
     if (
       !name &&
       !description &&
@@ -538,18 +538,17 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
       });
     }
 
-    const updatedTour = await Tour.findByIdAndUpdate(
-      req.params.id,
+    const updatedTour = await Tour.findOneAndUpdate(
+      { id },
       {
         name,
         description,
         price,
-        // Removed: date
         location,
-        image, // Update single image
+        image,
         duration,
         groupSize,
-        highlights: highlights || [], // Update highlights array
+        highlights: highlights || [],
       },
       { new: true, runValidators: true }
     );
@@ -581,7 +580,8 @@ router.put('/tours/:id', protect, admin, async (req, res) => {
 // @access  Private/Admin
 router.delete('/tours/:id', protect, admin, async (req, res) => {
   try {
-    const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+    const deletedTour = await Tour.findOneAndDelete({ id });
 
     if (!deletedTour) {
       return res
