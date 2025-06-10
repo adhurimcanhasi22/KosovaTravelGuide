@@ -60,9 +60,21 @@ const AddAccommodationPage = () => {
         throw new Error('Authentication token is missing. Please log in.');
       }
 
+      // *** FIX START ***
+      // Define your backend API URL from environment variables
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (!apiUrl) {
+        throw new Error(
+          'NEXT_PUBLIC_API_URL is not defined in your environment.'
+        );
+      }
+      // Construct the full absolute URL to your backend endpoint
+      const fullUrl = `${apiUrl}/admin/accommodations`;
+      // *** FIX END ***
+
       // Send the data to your backend API endpoint
-      const response = await fetch('/api/admin/accommodations', {
-        // Corrected route to include /api
+      const response = await fetch(fullUrl, {
+        // Use the fullUrl here
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +128,6 @@ const AddAccommodationPage = () => {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="mt-[6.5rem] max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
