@@ -5,7 +5,15 @@ import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie'; // Import js-cookie for token access
 import BookmarkButton from '../../components/BookmarkButton'; // Import the BookmarkButton component
-import { ListChecks, PlaneTakeoff } from 'lucide-react';
+import {
+  ListChecks,
+  PlaneTakeoff,
+  Utensils,
+  MapPin,
+  Star,
+  Euro,
+  ChefHat,
+} from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -213,6 +221,8 @@ export default function Dashboard() {
           return bookmark.name || 'Tour';
         case 'destination':
           return bookmark.name || 'Destination';
+        case 'restaurant': // NEW: Title for restaurants
+          return bookmark.name || 'Restaurant';
         default:
           return 'Bookmarked Item';
       }
@@ -231,8 +241,9 @@ export default function Dashboard() {
                 Type: {bookmark.type}
               </p>
               {bookmark.rating && (
-                <p className="text-gray-600 text-sm">
-                  Rating: {bookmark.rating} ★
+                <p className="flex items-center text-gray-600 text-sm space-x-1">
+                  <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  <span>{bookmark.rating}</span>
                 </p>
               )}
             </>
@@ -253,6 +264,24 @@ export default function Dashboard() {
             <p className="text-gray-600 text-sm">
               {bookmark.description?.substring(0, 70)}...
             </p>
+          );
+        case 'restaurant': // NEW: Details for restaurants
+          return (
+            <>
+              <p className="flex items-center text-gray-600 text-sm space-x-1">
+                <ChefHat className="h-4 w-4 text-gray-600" />
+                <span>{bookmark.cuisine || 'Various'} Cuisine</span>
+              </p>
+              <p className="flex items-center text-gray-600 text-sm space-x-1">
+                <span>Price: {bookmark.priceRange || 'N/A'}</span>
+              </p>
+              {bookmark.rating && (
+                <p className="flex items-center text-gray-600 text-sm space-x-1">
+                  <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+                  <span>{bookmark.rating}</span>
+                </p>
+              )}
+            </>
           );
         default:
           return null;
@@ -635,6 +664,18 @@ export default function Dashboard() {
                 className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
               >
                 Manage Tours
+              </Link>
+              <Link
+                href="/admin/add/restaurants"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-lightblue)] text-white hover:bg-[var(--enterprise-skyblue)]"
+              >
+                Add Restaurants
+              </Link>
+              <Link
+                href="/admin/manage/restaurants"
+                className="px-4 py-2 rounded-md bg-[var(--enterprise-yellow)] text-[var(--enterprise-lightgray)] hover:bg-[var(--enterprise-lightyellow)]"
+              >
+                Manage Restaurants
               </Link>
               <Link
                 href="/admin/add/travel-tips"

@@ -48,6 +48,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'dynamic-media-cdn.tripadvisor.com', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.choosechicago.com', // ADD THIS ENTRY
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

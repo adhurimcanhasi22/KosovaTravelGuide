@@ -382,35 +382,44 @@ export default function ToursPage() {
             {filteredAndSortedTours.map((tour) => (
               <div
                 key={`detail-${tour.id}`}
-                id={`detail-${tour.id}`} // Anchor for "View Details" link
+                id={`detail-${tour.id}`}
                 className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden"
               >
-                <img
-                  src={
-                    tour.image ||
-                    'https://placehold.co/300x300/cccccc/333333?text=Tour+Image'
-                  }
-                  alt={tour.name}
-                  className="w-full md:w-1/3 h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = `https://placehold.co/300x300/cccccc/333333?text=${tour.name}`;
-                  }}
-                />
-                <div className="p-6 flex-1 relative">
-                  <div className="absolute top-6 right-6 text-lg font-bold text-blue-600">
-                    €{tour.price}{' '}
-                    <span className="text-sm text-gray-600">per person</span>
-                  </div>
-
-                  <h3 className="text-2xl font-semibold">{tour.name}</h3>
-                  {/* If you add rating to tours, you can uncomment this */}
-                  {/* <div className="flex items-center text-yellow-500 mb-1">
-                    {'★'.repeat(Math.floor(tour.rating))}
-                    {'☆'.repeat(5 - Math.floor(tour.rating))}{' '}
-                    <span className="text-gray-600 ml-2">
-                      {tour.rating} out of 5
+                {/* Image Container (with price overlay) */}
+                <div className="relative w-full md:w-1/3">
+                  <img
+                    src={
+                      tour.image ||
+                      'https://placehold.co/300x300/cccccc/333333?text=Tour+Image'
+                    }
+                    alt={tour.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = `https://placehold.co/300x300/cccccc/333333?text=${tour.name}`;
+                    }}
+                  />
+                  {/* Price positioned on top-right of the image */}
+                  <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-md shadow-sm">
+                    <span className="text-lg font-bold text-blue-600">
+                      €{tour.price}
                     </span>
-                  </div> */}
+                    <span className="text-sm text-gray-600 ml-1">
+                      per person
+                    </span>
+                  </div>
+                </div>
+
+                {/* Text Content */}
+                <div className="p-6 flex-1">
+                  <h3 className="text-2xl font-semibold">{tour.name}</h3>
+                  {/* Uncomment if you add ratings to tours */}
+                  {/* <div className="flex items-center text-yellow-500 mb-1">
+              {'★'.repeat(Math.floor(tour.rating))}
+              {'☆'.repeat(5 - Math.floor(tour.rating))}{' '}
+              <span className="text-gray-600 ml-2">
+                {tour.rating} out of 5
+              </span>
+            </div> */}
                   <div className="flex items-center text-gray-600 mt-2 space-x-2">
                     <MapPin className="h-6 w-6 text-red-700" />
                     <span>{tour.location}, Kosovo</span>
@@ -426,7 +435,6 @@ export default function ToursPage() {
                     </span>
                     <span className="flex items-center space-x-2">
                       {getTourFeatureIcon('date')}
-                      {/* Assuming tour.date is a valid date string */}
                       <span>{new Date(tour.date).toLocaleDateString()}</span>
                     </span>
                   </div>
@@ -497,7 +505,10 @@ export default function ToursPage() {
                     </div>
                   </div>
 
-                  <div className="flex gap-4 mt-4"></div>
+                  {/* Booking Button (if needed) */}
+                  <div className="flex gap-4 mt-4">
+                    {/* Add booking button/link here if desired */}
+                  </div>
                 </div>
               </div>
             ))}

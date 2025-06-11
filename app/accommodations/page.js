@@ -182,7 +182,6 @@ export default function AccommodationPage() {
           </h5>
         </div>
       </div>
-
       <section className="w-full bg-white py-6 px-4 flex justify-center shadow-lg my-1">
         <div className="w-full max-w-7xl flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-center">
           {/* Search Field */}
@@ -234,21 +233,18 @@ export default function AccommodationPage() {
           </select>
         </div>
       </section>
-
       {/* Loading and Error Messages */}
       {loading && (
         <div className="text-center py-10">
           <p className="text-lg text-gray-700">Loading accommodations...</p>
         </div>
       )}
-
       {error && (
         <div className="text-center py-10">
           <p className="text-lg text-red-600">Error: {error}</p>
           <p className="text-md text-gray-500">Please try again later.</p>
         </div>
       )}
-
       {/* Hotel Cards Section */}
       {!loading && !error && filteredAndSortedAccommodations.length === 0 && (
         <div className="text-center py-10">
@@ -257,7 +253,6 @@ export default function AccommodationPage() {
           </p>
         </div>
       )}
-
       {!loading && !error && filteredAndSortedAccommodations.length > 0 && (
         <section className="w-full bg-white py-10 px-4 shadow-md">
           <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -326,14 +321,12 @@ export default function AccommodationPage() {
                       ))}
                   </div>
                   {hotel.bookingUrl ? (
-                    <a
-                      href={hotel.bookingUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <Link
+                      href={`#detail-${hotel.id}`}
                       className="w-full mt-[1rem] cursor-pointer text-white py-2 px-4 rounded-md bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] transition-colors duration-200 text-center"
                     >
                       View Details
-                    </a>
+                    </Link>
                   ) : (
                     <button
                       className="w-full mt-[1rem] bg-gray-400 text-white py-2 px-4 rounded-md cursor-not-allowed"
@@ -348,7 +341,6 @@ export default function AccommodationPage() {
           </div>
         </section>
       )}
-
       {/* Detailed Accommodation Section (Rendered below main grid) */}
       {!loading && !error && filteredAndSortedAccommodations.length > 0 && (
         <section className="py-12 px-6 bg-gray-50 w-full">
@@ -356,22 +348,32 @@ export default function AccommodationPage() {
             {filteredAndSortedAccommodations.map((hotel) => (
               <div
                 key={`detail-${hotel.id}`}
+                id={`detail-${hotel.id}`}
                 className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg overflow-hidden"
               >
-                <img
-                  src={hotel.image}
-                  alt={hotel.name}
-                  className="w-full md:w-1/3 h-full object-cover"
-                  onError={(e) => {
-                    e.target.src = `https://placehold.co/300x300/cccccc/333333?text=${hotel.name}`;
-                  }}
-                />
-                <div className="p-6 flex-1 relative">
-                  <div className="absolute top-6 right-6 text-lg font-bold text-blue-600">
-                    €{hotel.price}{' '}
-                    <span className="text-sm text-gray-600">per night</span>
+                {/* Image Container (with price overlay) */}
+                <div className="relative w-full md:w-1/3">
+                  <img
+                    src={hotel.image}
+                    alt={hotel.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = `https://placehold.co/300x300/cccccc/333333?text=${hotel.name}`;
+                    }}
+                  />
+                  {/* Price positioned on top-right of the image */}
+                  <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-md shadow-sm">
+                    <span className="text-lg font-bold text-blue-600">
+                      €{hotel.price}
+                    </span>
+                    <span className="text-sm text-gray-600 ml-1">
+                      per night
+                    </span>
                   </div>
+                </div>
 
+                {/* Text Content */}
+                <div className="p-6 flex-1">
                   <h3 className="text-2xl font-semibold">{hotel.name}</h3>
                   <div className="flex items-center text-yellow-500 mb-1">
                     {'★'.repeat(Math.floor(hotel.rating))}
@@ -389,13 +391,15 @@ export default function AccommodationPage() {
                     <span>{hotel.type}</span>
                   </div>
 
-                  {/* Placeholder for description if you add it to your schema */}
+                  {/* Description */}
                   <p className="text-gray-700 my-4">
                     Experience comfortable and convenient accommodations at{' '}
                     {hotel.name}. Located in {hotel.location}, this {hotel.type}{' '}
                     offers excellent amenities and is perfect for travelers
                     looking for great accommodations in Kosovo.
                   </p>
+
+                  {/* Features/Amenities */}
                   <div className="flex flex-wrap gap-2 text-sm mb-4">
                     {hotel.features &&
                       hotel.features.map((item) => (
@@ -409,6 +413,7 @@ export default function AccommodationPage() {
                       ))}
                   </div>
 
+                  {/* Booking Button */}
                   <div className="flex gap-4 mt-4">
                     {hotel.bookingUrl ? (
                       <a
