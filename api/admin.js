@@ -6,6 +6,7 @@ const City = require('../models/City'); // Import your City model
 const Accommodation = require('../models/Accommodation'); // Import your Accommodation model
 const Tour = require('../models/Tour'); // Import your Tour model (create this if you haven't)
 const TravelTip = require('../models/TravelTip'); // NEW: Import your TravelTip model
+const Restaurant = require('../models/Restaurant'); // Adjust path if necessary
 
 // @desc    Create a new accommodation
 // @route   POST /api/admin/accommodations
@@ -762,6 +763,222 @@ router.delete('/traveltips/:id', protect, admin, async (req, res) => {
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error deleting travel tip' });
+  }
+});
+
+// --- RESTAURANT ROUTES ---
+
+// @desc    Create a new restaurant
+// @route   POST /api/admin/restaurants
+// @access  Private/Admin
+router.post('/restaurants', protect, admin, async (req, res) => {
+  try {
+    const {
+      id,
+      name,
+      image,
+      location,
+      type,
+      cuisine, // New field for restaurants
+      priceRange, // New field for restaurants
+      rating,
+      description, // New field for restaurants
+      tripadvisorUrl, // New field for restaurants
+    } = req.body;
+
+    // Basic input validation for required fields
+    if (!id || !name || !location || !type || !description) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message:
+          'Missing required fields: id, name, location, type, description',
+      });
+    }
+
+    // Check if a restaurant with this ID already exists
+    const restaurantExists = await Restaurant.findOne({ id });
+    if (restaurantExists) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'Restaurant with this ID already exists',
+      });
+    }
+
+    const newRestaurant = new Restaurant({
+      id,
+      name,
+      image,
+      location,
+      type,
+      cuisine,
+      priceRange,
+      rating,
+      description,
+      tripadvisorUrl,
+    });
+
+    const createdRestaurant = await newRestaurant.save();
+    res.status(201).json({
+      status: 'SUCCESS',
+      message: 'Restaurant created successfully',
+      data: createdRestaurant,
+    });
+  } catch (error) {
+    console.error('Error creating restaurant:', error);
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    }
+    // Handle duplicate key error (if 'id' is unique)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        status: 'FAILED',
+        message: 'Restaurant with this ID already exists.',
+      });
+    }
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error creating restaurant',
+    });
+  }
+});
+
+// @desc    Get all restaurants
+// @route   GET /api/admin/restaurants
+// @access  Private/Admin
+router.get('/restaurants', protect, admin, async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find();
+    res.status(200).json({ status: 'SUCCESS', data: restaurants });
+  } catch (error) {
+    console.error('Error fetching restaurants:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching restaurants',
+    });
+  }
+});
+
+// @desc    Get a single restaurant by ID
+// @route   GET /api/admin/restaurants/:id
+// @access  Private/Admin
+router.get('/restaurants/:id', protect, admin, async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ id: req.params.id }); // Find by the string 'id'
+    if (!restaurant) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Restaurant not found' });
+    }
+    res.status(200).json({ status: 'SUCCESS', data: restaurant });
+  } catch (error) {
+    console.error('Error fetching restaurant:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching restaurant',
+    });
+  }
+});
+
+// @desc    Update a restaurant by ID
+// @route   PUT /api/admin/restaurants/:id
+// @access  Private/Admin
+router.put('/restaurants/:id', protect, admin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      name,
+      image,
+      location,
+      type,
+      cuisine,
+      priceRange,
+      rating,
+      description,
+      tripadvisorUrl,
+    } = req.body;
+
+    // Basic input validation: ensure at least one field is provided for update
+    if (
+      !name &&
+      !image &&
+      !location &&
+      !type &&
+      !cuisine &&
+      !priceRange &&
+      !rating &&
+      !description &&
+      !tripadvisorUrl
+    ) {
+      return res.status(400).json({
+        status: 'FAILED',
+        message: 'At least one field to update is required',
+      });
+    }
+
+    const updatedRestaurant = await Restaurant.findOneAndUpdate(
+      { id },
+      {
+        name,
+        image,
+        location,
+        type,
+        cuisine,
+        priceRange,
+        rating,
+        description,
+        tripadvisorUrl,
+      },
+      { new: true, runValidators: true } // Return the updated document, run validators
+    );
+
+    if (!updatedRestaurant) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Restaurant not found' });
+    }
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Restaurant updated successfully',
+      data: updatedRestaurant,
+    });
+  } catch (error) {
+    console.error('Error updating restaurant:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ status: 'FAILED', message: error.message });
+    }
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error updating restaurant',
+    });
+  }
+});
+
+// @desc    Delete a restaurant by ID
+// @route   DELETE /api/admin/restaurants/:id
+// @access  Private/Admin
+router.delete('/restaurants/:id', protect, admin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedRestaurant = await Restaurant.findOneAndDelete({ id });
+
+    if (!deletedRestaurant) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Restaurant not found' });
+    }
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message: 'Restaurant deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting restaurant:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error deleting restaurant',
+    });
   }
 });
 

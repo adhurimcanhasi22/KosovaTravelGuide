@@ -24,11 +24,7 @@ const UserSchema = new Schema({
     {
       bookmarkType: {
         type: String,
-        enum: ['city', 'accommodation', 'tour'], // Add other types as needed
-        required: true,
-      },
-      itemId: {
-        type: Schema.Types.ObjectId, // Assuming your city/accommodation IDs are ObjectIds
+        enum: ['city', 'accommodation', 'tour', 'restaurant'], // Add other types as needed
         required: true,
       },
       itemId: {

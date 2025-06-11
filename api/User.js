@@ -22,6 +22,9 @@ const Accommodation = require('../models/Accommodation');
 //mongodb Tour model
 const Tour = require('../models/Tour');
 
+//mongodb Restaurant model
+const Restaurant = require('../models/Restaurant'); // Ensure this line is present!
+
 //mongodb TravelPlan model
 const TravelPlan = require('../models/TravelPlan');
 
@@ -813,7 +816,6 @@ router.get('/bookmarks', protect, async (req, res) => {
             };
           }
         } else if (bookmark.bookmarkType === 'tour') {
-          // Assuming Tour model exists and is imported, and has an 'id' field
           item = await Tour.findOne({ id: bookmark.itemId }).select(
             'name image price duration groupSize location description'
           );
@@ -827,8 +829,29 @@ router.get('/bookmarks', protect, async (req, res) => {
               groupSize: item.groupSize,
               location: item.location,
               description: item.description,
-              route: `/tours/${bookmark.itemId}`, // Assuming tours have a unique string ID for their detail page
+              route: `/tours/${bookmark.itemId}`,
               type: 'tour',
+            };
+          }
+        } else if (bookmark.bookmarkType === 'restaurant') {
+          // NEW: Handle restaurant bookmarks
+          item = await Restaurant.findOne({ id: bookmark.itemId }).select(
+            'name image location type cuisine priceRange rating description tripadvisorUrl'
+          );
+          if (item) {
+            bookmarkData = {
+              ...bookmarkData,
+              name: item.name,
+              image: item.image,
+              location: item.location,
+              type: item.type,
+              cuisine: item.cuisine,
+              priceRange: item.priceRange,
+              rating: item.rating,
+              description: item.description,
+              tripadvisorUrl: item.tripadvisorUrl,
+              route: `/restaurants`, // Restaurants page only lists all; no individual detail page for now
+              type: 'restaurant',
             };
           }
         }
@@ -873,13 +896,16 @@ router.post('/bookmarks/add', protect, async (req, res) => {
     // Check if the item exists in the respective collection
     let itemExists = false;
     if (bookmarkType === 'city') {
-      itemExists = await City.exists({ _id: itemId }); // Assuming itemId is ObjectId for cities
+      itemExists = await City.exists({ _id: itemId });
     } else if (bookmarkType === 'accommodation') {
-      itemExists = await Accommodation.exists({ id: itemId }); // Assuming itemId is string ID for accommodations
+      itemExists = await Accommodation.exists({ id: itemId });
     } else if (bookmarkType === 'tour') {
-      // Added tour check
-      itemExists = await Tour.exists({ id: itemId }); // Assuming itemId is string ID for tours
+      itemExists = await Tour.exists({ id: itemId });
+    } else if (bookmarkType === 'restaurant') {
+      // NEW: Add restaurant type
+      itemExists = await Restaurant.exists({ id: itemId });
     } else {
+      // This else block handles any other unsupported bookmarkType
       return res
         .status(400)
         .json({ status: 'FAILED', message: 'Invalid bookmarkType' });
@@ -896,7 +922,7 @@ router.post('/bookmarks/add', protect, async (req, res) => {
     const alreadyBookmarked = user.bookmarks.some(
       (bookmark) =>
         bookmark.bookmarkType === bookmarkType &&
-        bookmark.itemId.toString() === itemId
+        bookmark.itemId.toString() === itemId // Ensure consistent string comparison
     );
 
     if (!alreadyBookmarked) {
@@ -950,7 +976,6 @@ router.delete('/bookmarks/remove', protect, async (req, res) => {
     );
 
     if (user.bookmarks.length === initialBookmarkCount) {
-      // If the count hasn't changed, it means the item wasn't found to remove
       console.log(
         `[Bookmark Remove] Item not found in user's bookmarks: ${bookmarkType} - ${itemId} for user ${userId}`
       );

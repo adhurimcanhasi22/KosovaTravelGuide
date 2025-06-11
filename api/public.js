@@ -4,6 +4,7 @@ const Accommodation = require('../models/Accommodation');
 const City = require('../models/City'); // Assuming you have this model for destinations
 const Tour = require('../models/Tour'); // Assuming you have this model for tours
 const TravelTip = require('../models/TravelTip'); // Assuming you have this model for travel tips
+const Restaurant = require('../models/Restaurant'); // Adjust path if necessary
 
 // --- Accommodation Routes (Publicly accessible) ---
 
@@ -93,6 +94,24 @@ router.get('/tours', async (req, res) => {
     res
       .status(500)
       .json({ status: 'FAILED', message: 'Server error fetching tours' });
+  }
+});
+
+// --- Restaurant Routes (Publicly accessible) ---
+
+// @desc    Get all restaurants
+// @route   GET /api/public/restaurants
+// @access  Public
+router.get('/restaurants', async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find();
+    res.status(200).json({ status: 'SUCCESS', data: restaurants });
+  } catch (error) {
+    console.error('Error fetching public restaurants:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching public restaurants',
+    });
   }
 });
 
