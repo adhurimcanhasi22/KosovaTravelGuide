@@ -19,7 +19,7 @@ export default function ContactPage() {
       {/* Hero Section Styled Exactly Like Provided Screenshot */}
       <div className="relative h-[40vh] min-h-[500px] bg-[var(--enterprise-lightGray)] flex items-center justify-center">
         <img
-          src="https://img.freepik.com/free-photo/close-up-person-working-call-center_23-2149288224.jpg?t=st=1749043854~exp=1749047454~hmac=ae660f77afc30fda9b212e277568eb2473f00dd70de17ced91f7ddc8ce762d39&w=2000"
+          src="https://www.raymond.in/static/media/Contact%20us%20banner%20.7a073f8d0667605662b2.jpg"
           alt="Accommodation Background"
           className="object-cover w-full h-full"
           onError={(e) => {
@@ -180,6 +180,45 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-gray-600">
                   Bank transfers and cash (in-office bookings).
+                </p>
+              </div>
+
+              {/* FAQ Item */}
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold">
+                  What languages do your guides speak?
+                </h3>
+                <p className="text-gray-600">
+                  All our guides speak fluent English. We also have guides
+                  available who speak German, Italian, French, and Spanish. Just
+                  let us know your language preference when booking.{' '}
+                </p>
+              </div>
+
+              {/* FAQ Item */}
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold">
+                  What type of accommodation is provided on multi-day tours?
+                </h3>
+                <p className="text-gray-600">
+                  We use quality 3-4 star hotels or authentic guesthouses,
+                  depending on the location and tour type. All accommodations
+                  are clean, comfortable, and carefully selected to enhance your
+                  experience of Kosovo. Single room supplements are available
+                  for solo travelers.
+                </p>
+              </div>
+              {/* FAQ Item */}
+              <div className="bg-white p-6 rounded-lg shadow-sm">
+                <h3 className="text-xl font-bold">
+                  What is your cancellation policy?
+                </h3>
+                <p className="text-gray-600">
+                  For most tours, cancellations made at least 48 hours before
+                  the start time receive a full refund. Cancellations less than
+                  48 hours in advance are not refundable. Multi-day tours may
+                  have different policies, which will be specified in the tour
+                  details.
                 </p>
               </div>
             </div>

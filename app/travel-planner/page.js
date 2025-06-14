@@ -527,9 +527,8 @@ export default function TravelPlannerPage() {
                 <span>Upon Arrival in Kosovo</span>
               </h2>
               <p className="text-gray-700 mb-4">
-                Once you arrive at Pristina International Airport (PRN), getting
-                to your accommodation or exploring the region is
-                straightforward.
+                Once you arrive at Pristina International Airport, getting to
+                your accommodation or exploring the region is straightforward.
               </p>
               <div className="grid grid-cols-1 gap-6">
                 {' '}
@@ -544,14 +543,10 @@ export default function TravelPlannerPage() {
                     your journey, or ensure the meter is used.
                   </p>
                   <ul className="list-disc list-inside text-gray-700 space-y-1">
-                    <li>**City Taxi:** +383 44 123 456 (Example)</li>
-                    <li>**Blue Taxi:** +383 45 789 012 (Example)</li>
-                    <li>**Prishtina Taxi:** +383 49 345 678 (Example)</li>
+                    <li>Taxi Era: +383 44 660 002</li>
+                    <li>Blue Taxi: +383 49 800 900</li>
+                    <li>Speed Taxi: +383 49 904 040</li>
                   </ul>
-                  <p className="text-sm text-gray-600 mt-2">
-                    (Note: These are example numbers. Real numbers can be found
-                    at the airport or online.)
-                  </p>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-700 mb-2">
@@ -564,11 +559,11 @@ export default function TravelPlannerPage() {
                   </p>
                   <ul className="list-disc list-inside text-gray-700 space-y-1">
                     <li>
-                      **International Rental Companies:** Hertz, Avis, Europcar,
-                      Enterprise (available at PRN).
+                      International Rental Companies:Hertz, Avis, Europcar,
+                      Enterprise.
                     </li>
                     <li>
-                      **Local Rental Companies:** Check local providers for
+                      Local Rental Companies: Check local providers for
                       competitive rates.
                     </li>
                   </ul>

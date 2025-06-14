@@ -12,6 +12,9 @@ import {
   CalendarDays,
   Utensils,
   Users,
+  Bus,
+  ShieldCheck,
+  Wifi,
 } from 'lucide-react';
 import axios from 'axios'; // Assuming axios is used for fetching data
 
@@ -69,9 +72,11 @@ const TravelTipsPage = () => {
       case 'time':
       case 'season':
       case 'weather':
+      case 'calendar-days':
         return <CalendarDays className="w-6 h-6 text-blue-600" />; // Lucide CalendarDays
       case 'food':
       case 'cuisine':
+      case 'food-and-drink':
         return <Utensils className="w-6 h-6 text-blue-600" />; // Lucide Utensils
       case 'people':
       case 'culture':
@@ -84,6 +89,12 @@ const TravelTipsPage = () => {
         return <Thermometer className="w-6 h-6 text-blue-600" />;
       case 'info': // Existing case for info
         return <Info className="w-6 h-6 text-blue-600" />;
+      case 'getting-around': // Existing case for passport
+        return <Bus className="w-6 h-6 text-blue-600" />;
+      case 'shield': // Existing case for passport
+        return <ShieldCheck className="w-6 h-6 text-blue-600" />;
+      case 'wifi': // Existing case for passport
+        return <Wifi className="w-6 h-6 text-blue-600" />;
       case 'passport': // Existing case for passport
         return <BookOpenCheck className="w-6 h-6 text-blue-600" />;
       default:
@@ -154,10 +165,7 @@ const TravelTipsPage = () => {
           {!loading && !error && travelTips.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {travelTips.map((tip) => (
-                <div
-                  key={tip.id}
-                  className="bg-gray-50 p-6 rounded-lg shadow-md"
-                >
+                <div key={tip.id} className="bg-white p-6 rounded-lg shadow-md">
                   <div className="flex items-center mb-4">
                     <div className="bg-blue-100 p-3 rounded-full mr-4">
                       {getIconComponent(tip.icon)}{' '}
@@ -195,7 +203,7 @@ const TravelTipsPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex items-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Globe className="text-2xl text-blue-600" />
@@ -232,7 +240,7 @@ const TravelTipsPage = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex items-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Plane className="text-2xl text-blue-600" />
@@ -269,7 +277,7 @@ const TravelTipsPage = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex items-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Thermometer className="text-2xl text-blue-600" />
@@ -304,7 +312,7 @@ const TravelTipsPage = () => {
               </ul>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex items-center mb-4">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Info className="text-2xl text-blue-600" />

@@ -232,7 +232,7 @@ const AIChatbot = () => {
       {/* Chatbot Toggler Button */}
       <button
         onClick={toggleChatbot}
-        className={`fixed bottom-8 right-8 h-12 w-12 flex items-center justify-center cursor-pointer rounded-full bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] transition-all duration-200 ease-in-out shadow-lg ${
+        className={`z-6000 fixed bottom-8 right-8 h-12 w-12 flex items-center justify-center cursor-pointer rounded-full bg-[var(--enterprise-lightblue)] hover:bg-[var(--enterprise-skyblue)] transition-all duration-200 ease-in-out shadow-lg ${
           isOpen ? 'rotate-90' : ''
         }`}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
@@ -255,7 +255,7 @@ const AIChatbot = () => {
 
       {/* Chatbot Popup */}
       <div
-        className={`fixed z-50 right-9 bottom-[90px] w-[420px] bg-white overflow-hidden rounded-2xl shadow-[0_0_120px_0_rgba(0,0,0,0.1),0_12px_64px_-48px_rgba(0,0,0,0.5)] transition-all duration-100 ease-in-out origin-bottom-right ${
+        className={`fixed z-6000 right-9 bottom-[90px] w-[420px] bg-white overflow-hidden rounded-2xl shadow-[0_0_120px_0_rgba(0,0,0,0.1),0_12px_64px_-48px_rgba(0,0,0,0.5)] transition-all duration-100 ease-in-out origin-bottom-right ${
           isOpen
             ? 'opacity-100 pointer-events-auto scale-100'
             : 'opacity-0 pointer-events-none scale-50'

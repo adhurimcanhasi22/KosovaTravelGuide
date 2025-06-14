@@ -346,38 +346,46 @@ export default function Navbar() {
               )}
               {/* Other mobile links */}
               <div className="flex flex-col">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  // Assuming you have a state like mobileTravelOpen and its setter
-                  onClick={() => setMobileTravelOpen(!mobileTravelOpen)}
-                >
-                  <span className="navbar-link !mb-0">Travel</span>{' '}
+                <div className="flex items-center justify-between">
+                  {/* Travel text navigates to /travel-tips */}
+                  <Link
+                    href="/travel-tips"
+                    className="navbar-link !mb-0"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Travel
+                  </Link>
+                  {/* Chevron toggles dropdown */}
                   <ChevronDown
-                    className={`size-4 transition-transform duration-300 ${
-                      mobileTravelOpen ? '-rotate-180' : '' // Corrected variable name here
-                    }`}
+                    className={`size-4 transition-transform duration-300 ml-2 ${
+                      mobileTravelOpen ? '-rotate-180' : ''
+                    } cursor-pointer`}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent Link navigation
+                      setMobileTravelOpen(!mobileTravelOpen);
+                    }}
                   />
                 </div>
-                {mobileTravelOpen && ( // Corrected variable name here
+                {mobileTravelOpen && (
                   <div className="pl-4 pt-2 space-y-2">
                     <Link
                       href="/travel-tips"
                       className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
-                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                      onClick={() => setIsOpen(false)}
                     >
                       Tips
                     </Link>
                     <Link
                       href="/travel-planner"
                       className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
-                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                      onClick={() => setIsOpen(false)}
                     >
                       Planner
                     </Link>
                     <Link
                       href="/booking"
                       className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
-                      onClick={() => setIsOpen(false)} // Assuming setIsOpen closes the overall mobile menu
+                      onClick={() => setIsOpen(false)}
                     >
                       Booking
                     </Link>
@@ -386,18 +394,24 @@ export default function Navbar() {
               </div>
               {/* Destinations Dropdown (Mobile) */}
               <div className="flex flex-col">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() =>
-                    setMobileDestinationsOpen(!mobileDestinationsOpen)
-                  }
-                >
-                  <span className="navbar-link !mb-0">Destinations</span>{' '}
-                  {/* Removed bottom margin */}
+                <div className="flex items-center justify-between cursor-pointer">
+                  {/* Destinations text navigates to /destinations */}
+                  <Link
+                    href="/destinations"
+                    className="navbar-link !mb-0"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Destinations
+                  </Link>
+                  {/* Chevron toggles dropdown */}
                   <ChevronDown
-                    className={`size-4 transition-transform duration-300 ${
+                    className={`size-4 transition-transform duration-300 ml-2 ${
                       mobileDestinationsOpen ? '-rotate-180' : ''
-                    }`}
+                    } cursor-pointer`}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent Link navigation
+                      setMobileDestinationsOpen(!mobileDestinationsOpen);
+                    }}
                   />
                 </div>
                 {mobileDestinationsOpen && (
@@ -416,7 +430,7 @@ export default function Navbar() {
                           key={dest.slug}
                           href={`/destinations/${dest.slug}`}
                           className="block text-[var(--enterprise-blue)] hover:text-[var(--enterprise-lightblue)]"
-                          onClick={() => setIsOpen(false)} // Close mobile menu on click
+                          onClick={() => setIsOpen(false)}
                         >
                           {dest.name}
                         </Link>
