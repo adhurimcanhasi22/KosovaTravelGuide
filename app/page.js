@@ -23,20 +23,20 @@ import {
 export default function Home() {
   const [featuredDestinations, setFeaturedDestinations] = useState([]);
   const [featuredAccommodations, setFeaturedAccommodations] = useState([]);
-  const [featuredRestaurants, setFeaturedRestaurants] = useState([]); // NEW: Restaurants state
+  const [featuredRestaurants, setFeaturedRestaurants] = useState([]); 
   const [featuredTours, setFeaturedTours] = useState([]);
-  const [featuredTravelTips, setFeaturedTravelTips] = useState([]); // NEW: Travel Tips state
+  const [featuredTravelTips, setFeaturedTravelTips] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Carousel states
   const carouselImages = [
-    'https://i.im.ge/2025/06/19/JuP2zz.kosowo-natura.jpeg', // REPLACE with your actual image URLs
+    'https://i.im.ge/2025/06/19/JuP2zz.kosowo-natura.jpeg', 
     'https://i.im.ge/2025/06/19/Ju6BrK.kosovo-tours-2.png',
     'https://i.im.ge/2025/06/19/JutdCm.Gjeravica-2.jpeg',
     'https://i.im.ge/2025/06/19/JuyXJJ.landscape-3723345-1920.jpeg',
     'https://i.im.ge/2025/06/19/JuNVFC.Tropoja-Lake-Kosovo.png',
-    // Add more if you have them, up to 5
+    
   ];
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef(null);
@@ -46,7 +46,7 @@ export default function Home() {
   useEffect(() => {
     slideIntervalRef.current = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % carouselImages.length);
-    }, 5000); // Change image every 5 seconds
+    }, 5000); // Changes image every 5 seconds
 
     return () => {
       if (slideIntervalRef.current) {
@@ -65,8 +65,8 @@ export default function Home() {
         throw new Error('NEXT_PUBLIC_API_URL is not defined.');
       }
 
-      // Fetching up to 6 items for each category and 3 for travel tips
-      // Note: Assuming backend doesn't have an `isFeatured` filter, so we take the first few.
+      
+      
       const [destRes, accommRes, toursRes, restaurantsRes, travelTipsRes] =
         await Promise.all([
           axios.get(`${apiUrl}/public/destinations`), // Fetch all and slice
@@ -127,7 +127,7 @@ export default function Home() {
             src={src}
             alt={`Kosovo landscape slide ${index + 1}`}
             fill
-            priority={index === 0} // Load first image with high priority
+            priority={index === 0} // Loads first image with high priority
             unoptimized={true}
             className={`object-cover object-center transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? 'opacity-100' : 'opacity-0 absolute'
@@ -296,7 +296,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Featured Restaurants Section (NEW) */}
+      {/* Featured Restaurants Section */}
       {!loading && !error && (
         <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center mb-12">
@@ -427,7 +427,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Travel Tips Section (Dynamic) */}
+      {/* Travel Tips Section */}
       {!loading && !error && (
         <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center mb-12">
@@ -448,7 +448,7 @@ export default function Home() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10 text-left">
               {featuredTravelTips.map(
                 (
-                  tip // Use fetched tips
+                  tip 
                 ) => (
                   <div
                     key={tip._id}
@@ -456,18 +456,18 @@ export default function Home() {
                   >
                     <div className="flex items-center mb-4 text-blue-700">
                       <span className="mr-3 p-2 bg-blue-100 rounded-full">
-                        {/* You'll need to decide on specific icons for travel tips based on their categories/titles */}
-                        <Info className="h-6 w-6" /> {/* Generic for now */}
+                        
+                        <Info className="h-6 w-6" /> 
                       </span>
                       <h3 className="text-xl font-semibold text-gray-900">
                         {tip.title}
                       </h3>
                     </div>
                     <p className="text-gray-700 text-base leading-relaxed whitespace-pre-line flex-grow">
-                      {tip.content.substring(0, 150)}... {/* Show snippet */}
+                      {tip.content.substring(0, 150)}... {/* Shows snippet */}
                     </p>
                     <Link
-                      href={`/travel-tips/`} // Link to dynamic travel tip page
+                      href={`/travel-tips/`} 
                       className="mt-4 text-blue-600 hover:underline text-sm font-semibold"
                     >
                       Read More
