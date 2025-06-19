@@ -178,4 +178,33 @@ router.get('/restaurants/:id', async (req, res) => {
   }
 });
 
+// --- NEW: Mock Currency Exchange Rates Route (Publicly accessible) ---
+// @desc    Get mock currency exchange rates for EUR
+// @route   GET /api/public/exchange-rates
+// @access  Public
+router.get('/exchange-rates', async (req, res) => {
+  try {
+    const mockRates = {
+      baseCurrency: 'EUR',
+      rates: {
+        USD: 1.075, // 1 EUR = 1.075 USD
+        GBP: 0.849, // 1 EUR = 0.849 GBP
+        CHF: 0.975, // 1 EUR = 0.975 CHF
+        CAD: 1.472, // 1 EUR = 1.472 CAD
+        AUD: 1.621, // 1 EUR = 1.621 AUD
+        JPY: 170.25, // 1 EUR = 170.25 JPY
+        ALL: 103.0, // 1 EUR = 103.00 Albanian Lek
+      },
+      lastUpdated: new Date().toISOString(), // Current timestamp
+    };
+    res.status(200).json({ status: 'SUCCESS', data: mockRates });
+  } catch (error) {
+    console.error('Error fetching mock exchange rates:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching mock exchange rates',
+    });
+  }
+});
+
 module.exports = router;
