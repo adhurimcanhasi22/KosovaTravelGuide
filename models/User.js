@@ -39,8 +39,29 @@ const UserSchema = new Schema({
   ],
   reviews: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'Review', // Assuming you'll have a Review model
+      reviewId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Review',
+        required: true,
+      },
+      itemId: {
+        type: String,
+        required: true,
+      },
+      itemType: {
+        type: String,
+        enum: ['city', 'accommodation', 'tour', 'restaurant'],
+        required: true,
+      },
+      subject: {
+        type: String,
+        required: true,
+        maxlength: 100,
+      },
+      submittedAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
   createdAt: {

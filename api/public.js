@@ -4,7 +4,7 @@ const Accommodation = require('../models/Accommodation');
 const City = require('../models/City'); // Assuming you have this model for destinations
 const Tour = require('../models/Tour'); // Assuming you have this model for tours
 const TravelTip = require('../models/TravelTip'); // Assuming you have this model for travel tips
-const Restaurant = require('../models/Restaurant'); // Adjust path if necessary
+const Restaurant = require('../models/Restaurant');
 
 // --- Accommodation Routes (Publicly accessible) ---
 
@@ -20,6 +20,27 @@ router.get('/accommodations', async (req, res) => {
     res.status(500).json({
       status: 'FAILED',
       message: 'Server error fetching public accommodations',
+    });
+  }
+});
+
+// NEW: @desc    Get a single accommodation by its custom ID (string 'id' field)
+// NEW: @route   GET /api/public/accommodations/:id
+// NEW: @access  Public
+router.get('/accommodations/:id', async (req, res) => {
+  try {
+    const accommodation = await Accommodation.findOne({ id: req.params.id }); // Find by the string 'id'
+    if (!accommodation) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Accommodation not found' });
+    }
+    res.status(200).json({ status: 'SUCCESS', data: accommodation });
+  } catch (error) {
+    console.error('Error fetching public accommodation by ID:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching public accommodation',
     });
   }
 });
@@ -70,7 +91,7 @@ router.get('/destinations/:slug', async (req, res) => {
 // @access  Public
 router.get('/traveltips', async (req, res) => {
   try {
-    const travelTips = await TravelTip.find(); // Assuming TravelTip model
+    const travelTips = await TravelTip.find();
     res.status(200).json({ status: 'SUCCESS', data: travelTips });
   } catch (error) {
     console.error('Error fetching public travel tips:', error);
@@ -97,6 +118,27 @@ router.get('/tours', async (req, res) => {
   }
 });
 
+// NEW: @desc    Get a single tour by its custom ID (string 'id' field)
+// NEW: @route   GET /api/public/tours/:id
+// NEW: @access  Public
+router.get('/tours/:id', async (req, res) => {
+  try {
+    const tour = await Tour.findOne({ id: req.params.id }); // Find by the string 'id'
+    if (!tour) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Tour not found' });
+    }
+    res.status(200).json({ status: 'SUCCESS', data: tour });
+  } catch (error) {
+    console.error('Error fetching public tour by ID:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching public tour',
+    });
+  }
+});
+
 // --- Restaurant Routes (Publicly accessible) ---
 
 // @desc    Get all restaurants
@@ -111,6 +153,27 @@ router.get('/restaurants', async (req, res) => {
     res.status(500).json({
       status: 'FAILED',
       message: 'Server error fetching public restaurants',
+    });
+  }
+});
+
+// NEW: @desc    Get a single restaurant by its custom ID (string 'id' field)
+// NEW: @route   GET /api/public/restaurants/:id
+// NEW: @access  Public
+router.get('/restaurants/:id', async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ id: req.params.id }); // Find by the string 'id'
+    if (!restaurant) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Restaurant not found' });
+    }
+    res.status(200).json({ status: 'SUCCESS', data: restaurant });
+  } catch (error) {
+    console.error('Error fetching public restaurant by ID:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Server error fetching public restaurant',
     });
   }
 });

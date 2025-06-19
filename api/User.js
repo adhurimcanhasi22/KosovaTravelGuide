@@ -7,6 +7,9 @@ const { protect } = require('../middleware/authMiddleware');
 //mongodb user model
 const User = require('./../models/User');
 
+// mongodb review model
+const Review = require('./../models/Review');
+
 //mongodb user verification model
 const UserVerification = require('./../models/UserVerification');
 
@@ -1039,6 +1042,238 @@ router.post('/contact', async (req, res) => {
       message: 'Failed to send message. Please try again later.',
       error: error.message,
     });
+  }
+});
+
+// --- Review Submission Route ---
+// @desc    Submit a user review for an item
+// @route   POST /api/reviews/submit
+// @access  Private (requires user to be logged in)
+router.post('/reviews/submit', protect, async (req, res) => {
+  const { itemId, itemType, subject, message, reasons, rating } = req.body;
+  const userId = req.user.userId; // Extracted from the protected middleware
+  let userName = req.user.name; // Get user's name from token payload if available, or fetch from DB if needed
+
+  // Fetch user's name if not available in token payload (less efficient)
+  if (!userName) {
+    const user = await User.findById(userId).select('name');
+    if (user) {
+      userName = user.name;
+    } else {
+      console.warn(`User with ID ${userId} not found for review submission.`);
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'User not found.' });
+    }
+  }
+
+  // Basic validation for review content
+  if (!itemId || !itemType || !subject || !message) {
+    return res.status(400).json({
+      status: 'FAILED',
+      message: 'Item ID, item type, subject, and message are required fields.',
+    });
+  }
+
+  // Validate itemType against allowed values
+  const allowedItemTypes = ['city', 'accommodation', 'tour', 'restaurant'];
+  if (!allowedItemTypes.includes(itemType)) {
+    return res.status(400).json({
+      status: 'FAILED',
+      message: `Invalid itemType: ${itemType}. Must be one of ${allowedItemTypes.join(
+        ', '
+      )}.`,
+    });
+  }
+
+  try {
+    // 1. Verify the item actually exists
+    let itemTitle = 'Unknown Item'; // Default for email
+    let itemLink = '#'; // Default for email
+    let existingItem = null;
+
+    switch (itemType) {
+      case 'city':
+        existingItem = await City.findOne({ slug: itemId }).select('name');
+        if (existingItem) {
+          itemTitle = existingItem.name;
+          itemLink = `https://kosovatravelguidetest.netlify.app/destinations/${itemId}`;
+        }
+        break;
+      case 'accommodation':
+        existingItem = await Accommodation.findOne({ id: itemId }).select(
+          'name'
+        );
+        if (existingItem) {
+          itemTitle = existingItem.name;
+          itemLink = `https://kosovatravelguidetest.netlify.app/accommodations/${itemId}`;
+        }
+        break;
+      case 'tour':
+        existingItem = await Tour.findOne({ id: itemId }).select('name');
+        if (existingItem) {
+          itemTitle = existingItem.name;
+          itemLink = `https://kosovatravelguidetest.netlify.app/tours/${itemId}`;
+        }
+        break;
+      case 'restaurant':
+        existingItem = await Restaurant.findOne({ id: itemId }).select('name');
+        if (existingItem) {
+          itemTitle = existingItem.name;
+          itemLink = `https://kosovatravelguidetest.netlify.app/restaurants`; // Restaurants page lists all
+        }
+        break;
+      default:
+        // This case should ideally not be hit due to allowedItemTypes check
+        break;
+    }
+
+    if (!existingItem) {
+      return res.status(404).json({
+        status: 'FAILED',
+        message: `The ${itemType} with ID ${itemId} was not found.`,
+      });
+    }
+
+    // 2. Save the full review to the 'reviews' collection
+    const newReview = new Review({
+      userId: userId,
+      itemId: itemId,
+      itemType: itemType,
+      userName: userName,
+      subject: subject,
+      message: message,
+      reasons: reasons || [], // Ensure it's an array, even if empty
+      rating: rating,
+      submittedAt: Date.now(),
+      status: 'pending', // Default status
+    });
+
+    const savedReview = await newReview.save();
+
+    // 3. Add a lightweight reference to the user's 'reviews' array
+    const currentUser = await User.findById(userId);
+    if (currentUser) {
+      currentUser.reviews.push({
+        reviewId: savedReview._id, // Link to the full review document
+        itemId: itemId,
+        itemType: itemType,
+        subject: subject,
+        submittedAt: savedReview.submittedAt,
+      });
+      await currentUser.save();
+    } else {
+      console.warn(
+        `User ${userId} not found when trying to update reviews array.`
+      );
+    }
+
+    // 4. Send email notification to staff
+    const staffEmailHtml = `
+      <h2>New Review Submitted!</h2>
+      <p><strong>From User:</strong> ${userName} (ID: ${userId})</p>
+      <p><strong>User Email:</strong> ${req.user.email}</p>
+      <hr>
+      <h3>Review Details:</h3>
+      <p><strong>Item Type:</strong> ${itemType}</p>
+      <p><strong>Item Name:</strong> <a href="${itemLink}">${itemTitle}</a> (ID: ${itemId})</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      ${rating ? `<p><strong>Rating:</strong> ${rating} / 5</p>` : ''}
+      ${
+        reasons && reasons.length > 0
+          ? `<p><strong>Reasons:</strong> ${reasons.join(', ')}</p>`
+          : ''
+      }
+      <p><strong>Message:</strong></p>
+      <p>${message.replace(/\n/g, '<br>')}</p>
+      <hr>
+      <p>This review is awaiting internal moderation and feedback.</p>
+    `;
+
+    const mailOptions = {
+      from: `"Review System" <${process.env.AUTH_EMAIL}>`, // Using a generic sender name
+      to: process.env.RECIPIENT_EMAIL, // Your email address where you want to receive reviews
+      subject: `New ${itemType} Review: ${subject}`,
+      html: staffEmailHtml,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      status: 'SUCCESS',
+      message:
+        'Your review has been submitted successfully and will be reviewed by our staff!',
+    });
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({
+      status: 'FAILED',
+      message: 'Failed to submit review. Please try again later.',
+      error: error.message,
+    });
+  }
+});
+
+// --- NEW: Protected Route to Delete a User's Submitted Review ---
+// @desc    Delete a review submitted by the user
+// @route   DELETE /api/user/reviews/remove/:reviewId
+// @access  Private (requires user to be logged in)
+router.delete('/reviews/remove/:reviewId', protect, async (req, res) => {
+  try {
+    const userId = req.user.userId; // User making the request
+    const { reviewId } = req.params; // ID of the review to delete
+
+    // 1. Find the review in the Review collection
+    const reviewToDelete = await Review.findById(reviewId);
+
+    if (!reviewToDelete) {
+      return res
+        .status(404)
+        .json({ status: 'FAILED', message: 'Review not found.' });
+    }
+
+    // 2. Ensure the review belongs to the authenticated user
+    // Convert userId and reviewToDelete.userId to string for comparison if they are ObjectId
+    if (reviewToDelete.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        status: 'FAILED',
+        message: 'Unauthorized: You can only delete your own reviews.',
+      });
+    }
+
+    // 3. Remove the review from the main Review collection
+    await reviewToDelete.deleteOne(); // Use deleteOne() on the document instance
+
+    // 4. Remove the lightweight review reference from the user's document
+    const user = await User.findById(userId);
+    if (user) {
+      const initialReviewCount = user.reviews.length;
+      user.reviews = user.reviews.filter(
+        (rev) => rev.reviewId.toString() !== reviewId.toString()
+      );
+      if (user.reviews.length < initialReviewCount) {
+        await user.save();
+      } else {
+        console.warn(
+          `Review reference ${reviewId} not found in user ${userId}'s document, but full review was deleted.`
+        );
+      }
+    }
+
+    res
+      .status(200)
+      .json({ status: 'SUCCESS', message: 'Review deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    // Handle invalid ObjectId format error
+    if (error.kind === 'ObjectId') {
+      return res
+        .status(400)
+        .json({ status: 'FAILED', message: 'Invalid Review ID format.' });
+    }
+    res
+      .status(500)
+      .json({ status: 'FAILED', message: 'Server error deleting review.' });
   }
 });
 
