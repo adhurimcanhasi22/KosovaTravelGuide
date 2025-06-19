@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import axios from 'axios'; // Using axios for fetching data
 import BookmarkButton from '../../components/BookmarkButton';
+import ReviewButton from '../../components/ReviewButton';
 
 import {
   CalendarDays, // For tour date
@@ -329,25 +330,33 @@ export default function ToursPage() {
                     <h3 className="text-xl font-semibold text-black">
                       {tour.name}
                     </h3>
-                    <BookmarkButton
-                      itemId={tour.id}
-                      bookmarkType="tour"
-                      onToggle={handleBookmarkToggle}
-                    />
                   </div>
-                  <div className="flex items-center text-gray-600 mt-2 space-x-2">
-                    <MapPin className="h-6 w-6 text-red-400" />
-                    <span>{tour.location}</span>
+                  <div className="flex flex-row justify-between items-start mt-4 mb-2">
+                    {/* Left side: stacked vertically */}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <MapPin className="h-5 w-5 text-red-400" />
+                        <span>{tour.location}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Clock className="h-5 w-5 text-blue-400" />
+                        <span>{tour.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-gray-600">
+                        <Users className="h-5 w-5 text-green-400" />
+                        <span>{tour.groupSize} people</span>
+                      </div>
+                    </div>
+                    {/* Right side: stacked vertically */}
+                    <div className="flex flex-col items-end gap-2">
+                      <BookmarkButton
+                        itemId={tour.id}
+                        bookmarkType="tour"
+                        onToggle={handleBookmarkToggle}
+                      />
+                      <ReviewButton itemId={tour.id} itemType="tour" />
+                    </div>
                   </div>
-                  <div className="flex items-center text-gray-600 mt-2 space-x-2">
-                    <Clock className="h-6 w-6 text-black" />
-                    <span>{tour.duration}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mt-2 space-x-2">
-                    <Users className="h-6 w-6 text-black" />
-                    <span>{tour.groupSize}</span>
-                  </div>
-
                   <hr className="my-4 border-gray-200" />
                   <div className="flex flex-wrap gap-2">
                     {/* Assuming features are not explicitly in Tour model, using general info */}

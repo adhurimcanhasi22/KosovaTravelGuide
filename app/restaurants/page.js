@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import axios from 'axios'; // Using axios for fetching data
 import BookmarkButton from '../../components/BookmarkButton';
+import ReviewButton from '../../components/ReviewButton';
 
 import {
   Utensils, // For general restaurant/eating
@@ -317,30 +318,37 @@ export default function RestaurantsPage() {
                       </span>
                     </div>
                   </div>
-                  {/* Location */}
-                  <div className="flex items-center text-gray-600 space-x-2 mt-2">
-                    <MapPin className="h-6 w-6 text-red-400" />
-                    <span>{restaurant.location}</span>
-                  </div>
-                  {/* Type, Cuisine, and BookmarkButton in one row */}
-                  <div className="flex items-start justify-between mt-1">
-                    <div>
-                      <div className="flex items-center space-x-2">
+                  {/* Location and Buttons in one row */}
+                  <div className="flex flex-row justify-between items-start mt-2">
+                    {/* Left: Location, Type, Cuisine stacked vertically */}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center text-gray-600 gap-2">
+                        <MapPin className="h-6 w-6 text-red-400" />
+                        <span>{restaurant.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <ChefHat className="h-6 w-6 text-black" />
                         <span>{restaurant.type}</span>
                       </div>
                       {restaurant.cuisine && (
-                        <div className="flex items-center space-x-2 mt-1">
+                        <div className="flex items-center gap-2">
                           <Utensils className="h-6 w-6 text-gray-700" />
                           <span>{restaurant.cuisine}</span>
                         </div>
                       )}
                     </div>
-                    <BookmarkButton
-                      itemId={restaurant.id}
-                      bookmarkType="restaurant"
-                      onToggle={handleBookmarkToggle}
-                    />
+                    {/* Right: Bookmark and Review buttons vertically, aligned to top */}
+                    <div className="flex flex-col items-end space-y-2">
+                      <BookmarkButton
+                        itemId={restaurant.id}
+                        bookmarkType="restaurant"
+                        onToggle={handleBookmarkToggle}
+                      />
+                      <ReviewButton
+                        itemId={restaurant.id}
+                        itemType="restaurant"
+                      />
+                    </div>
                   </div>
                   {/* Description */}
                   <p className="text-gray-700 text-sm mt-3 mb-4 line-clamp-3">

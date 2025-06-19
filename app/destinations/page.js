@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo, useCallback } from 'react'; // Added useC
 import Link from 'next/link';
 import axios from 'axios';
 import BookmarkButton from '../../components/BookmarkButton';
-import dynamic from 'next/dynamic'; // Import dynamic from next/dynamic
+import dynamic from 'next/dynamic';
+import ReviewButton from '../../components/ReviewButton';
 
 import {
   MapPin, // For destination location/region
@@ -261,21 +262,28 @@ export default function DestinationsPage() {
                     />
                   </div>
                   <div className="p-5 flex flex-col text-left flex-grow">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-semibold text-black">
-                        {destination.name}
-                      </h3>
-                      <BookmarkButton
-                        itemId={destination._id}
-                        bookmarkType="city"
-                        onToggle={handleBookmarkToggle}
-                      />
+                    <div className="flex flex-row justify-between items-start mb-2">
+                      {/* Left side: vertically stacked infos */}
+                      <div className="flex flex-col gap-1">
+                        <h3 className="text-xl font-semibold text-black">
+                          {destination.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <MapPin className="h-5 w-5 text-red-400" />
+                          <span>{destination.region}</span>
+                        </div>
+                      </div>
+                      {/* Right side: vertically stacked buttons */}
+                      <div className="flex flex-col items-end space-y-2">
+                        <BookmarkButton
+                          itemId={destination._id}
+                          bookmarkType="city"
+                          onToggle={handleBookmarkToggle}
+                        />
+                        <ReviewButton itemId={destination.slug} itemType="city" />
+                      </div>
                     </div>
                     <div className="flex-grow">
-                      <div className="flex items-center text-gray-600 space-x-2">
-                        <MapPin className="h-6 w-6 text-red-400" />
-                        <span>{destination.region}</span>
-                      </div>
                       <p className="text-gray-700 text-sm mt-3 mb-4 line-clamp-3">
                         {destination.description || 'No description available.'}
                       </p>

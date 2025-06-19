@@ -2,8 +2,9 @@
 import Image from 'next/image';
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import axios from 'axios'; // Using axios for fetching data
+import axios from 'axios';
 import BookmarkButton from '../../components/BookmarkButton';
+import ReviewButton from '../../components/ReviewButton';
 
 import {
   CalendarDays,
@@ -300,11 +301,15 @@ export default function AccommodationPage() {
                         <span>{hotel.type}</span>
                       </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex flex-col items-center space-y-2">
                       <BookmarkButton
                         itemId={hotel.id}
                         bookmarkType="accommodation"
                         onToggle={handleBookmarkToggle}
+                      />
+                      <ReviewButton
+                        itemId={hotel.id}
+                        itemType="accommodation"
                       />
                     </div>
                   </div>
